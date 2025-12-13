@@ -2,6 +2,7 @@ package com.tnong.boot.system.tenant.controller;
 
 import com.tnong.boot.common.web.PageResult;
 import com.tnong.boot.common.web.Result;
+import com.tnong.boot.framework.security.UserContext;
 import com.tnong.boot.system.tenant.domain.dto.SysTenantQueryDTO;
 import com.tnong.boot.system.tenant.domain.dto.SysTenantSaveDTO;
 import com.tnong.boot.system.tenant.domain.vo.SysTenantVO;
@@ -42,7 +43,7 @@ public class SysTenantController {
      */
     @PostMapping
     public Result<Long> save(@RequestBody SysTenantSaveDTO dto) {
-        Long currentUserId = 1L;
+        Long currentUserId = UserContext.getUserId();
         Long tenantId = sysTenantService.save(dto, currentUserId);
         return Result.success("新增成功", tenantId);
     }
@@ -52,7 +53,7 @@ public class SysTenantController {
      */
     @PutMapping
     public Result<Void> update(@RequestBody SysTenantSaveDTO dto) {
-        Long currentUserId = 1L;
+        Long currentUserId = UserContext.getUserId();
         sysTenantService.update(dto, currentUserId);
         return Result.success("更新成功", null);
     }
@@ -62,7 +63,7 @@ public class SysTenantController {
      */
     @DeleteMapping("/{id}")
     public Result<Void> delete(@PathVariable Long id, @RequestParam Integer version) {
-        Long currentUserId = 1L;
+        Long currentUserId = UserContext.getUserId();
         sysTenantService.delete(id, version, currentUserId);
         return Result.success("删除成功", null);
     }

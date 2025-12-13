@@ -2,6 +2,7 @@ package com.tnong.boot.system.user.controller;
 
 import com.tnong.boot.common.web.PageResult;
 import com.tnong.boot.common.web.Result;
+import com.tnong.boot.framework.security.UserContext;
 import com.tnong.boot.system.user.domain.dto.SysUserQueryDTO;
 import com.tnong.boot.system.user.domain.dto.SysUserSaveDTO;
 import com.tnong.boot.system.user.domain.vo.SysUserVO;
@@ -24,8 +25,7 @@ public class SysUserController {
      */
     @GetMapping("/page")
     public Result<PageResult<SysUserVO>> page(SysUserQueryDTO query) {
-        // TODO: 从当前登录用户上下文获取 tenantId
-        Long tenantId = 1L;
+        Long tenantId = UserContext.getTenantId();
         PageResult<SysUserVO> pageResult = sysUserService.pageList(query, tenantId);
         return Result.success(pageResult);
     }
@@ -35,8 +35,7 @@ public class SysUserController {
      */
     @GetMapping("/{id}")
     public Result<SysUserVO> getById(@PathVariable Long id) {
-        // TODO: 从当前登录用户上下文获取 tenantId
-        Long tenantId = 1L;
+        Long tenantId = UserContext.getTenantId();
         SysUserVO user = sysUserService.getById(id, tenantId);
         return Result.success(user);
     }
@@ -46,9 +45,8 @@ public class SysUserController {
      */
     @PostMapping
     public Result<Long> save(@RequestBody SysUserSaveDTO dto) {
-        // TODO: 从当前登录用户上下文获取 tenantId 和 currentUserId
-        Long tenantId = 1L;
-        Long currentUserId = 1L;
+        Long tenantId = UserContext.getTenantId();
+        Long currentUserId = UserContext.getUserId();
         Long userId = sysUserService.save(dto, tenantId, currentUserId);
         return Result.success("新增成功", userId);
     }
@@ -58,9 +56,8 @@ public class SysUserController {
      */
     @PutMapping
     public Result<Void> update(@RequestBody SysUserSaveDTO dto) {
-        // TODO: 从当前登录用户上下文获取 tenantId 和 currentUserId
-        Long tenantId = 1L;
-        Long currentUserId = 1L;
+        Long tenantId = UserContext.getTenantId();
+        Long currentUserId = UserContext.getUserId();
         sysUserService.update(dto, tenantId, currentUserId);
         return Result.success("更新成功", null);
     }
@@ -70,9 +67,8 @@ public class SysUserController {
      */
     @DeleteMapping("/{id}")
     public Result<Void> delete(@PathVariable Long id, @RequestParam Integer version) {
-        // TODO: 从当前登录用户上下文获取 tenantId 和 currentUserId
-        Long tenantId = 1L;
-        Long currentUserId = 1L;
+        Long tenantId = UserContext.getTenantId();
+        Long currentUserId = UserContext.getUserId();
         sysUserService.delete(id, tenantId, version, currentUserId);
         return Result.success("删除成功", null);
     }

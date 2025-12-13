@@ -54,13 +54,15 @@ public class SysUserServiceImpl implements SysUserService {
             throw new BusinessException("用户名已存在");
         }
 
-        // TODO: 密码加密（BCrypt）
+        // 密码加密（BCrypt）
         if (!StringUtils.hasText(dto.getPassword())) {
             throw new BusinessException("密码不能为空");
         }
+        String encodedPassword = com.tnong.boot.common.util.PasswordUtil.encode(dto.getPassword());
 
         SysUser user = new SysUser();
         BeanUtils.copyProperties(dto, user);
+        user.setPassword(encodedPassword);
         user.setTenantId(tenantId);
         user.setCreatedUser(currentUserId);
         user.setUpdatedUser(currentUserId);
@@ -102,7 +104,10 @@ public class SysUserServiceImpl implements SysUserService {
         user.setTenantId(tenantId);
         user.setUpdatedUser(currentUserId);
 
-        // TODO: 如果需要修改密码，先进行加密
+        // 如果需要修改密码，先进行加密
+        if (StringUtils.hasText(dto.getPassword())) {
+            user.setPassword(com.tnong.boot.common.util.PasswordUtil.encode(dto.getPassword()));
+        }
 
         int rows = sysUserMapper.updateByIdWithVersion(user);
         if (rows == 0) {

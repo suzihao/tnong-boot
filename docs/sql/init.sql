@@ -98,7 +98,7 @@ VALUES (1, 'DEFAULT', '默认租户', 1, 1, 1);
 INSERT INTO `sys_dept` (`id`, `tenant_id`, `parent_id`, `name`, `code`, `sort`, `status`, `created_user`, `updated_user`) 
 VALUES (1, 1, 0, '总公司', 'ROOT', 0, 1, 1, 1);
 
--- 插入测试用户（密码：123456，需要在实际使用时进行BCrypt加密）
+-- 插入测试用户（密码：123456）
+-- 注意：这是临时密码，首次登录后需要通过 /api/auth/encode-password?password=123456 获取加密后的密码并更新
 INSERT INTO `sys_user` (`id`, `tenant_id`, `dept_id`, `username`, `password`, `nickname`, `status`, `created_user`, `updated_user`) 
-VALUES (1, 1, 1, 'admin', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVKIUi', '管理员', 1, 1, 1);
--- 注：上面的密码是 123456 的 BCrypt 加密结果
+VALUES (1, 1, 1, 'admin', 'TEMP_PASSWORD', '管理员', 1, 1, 1);
