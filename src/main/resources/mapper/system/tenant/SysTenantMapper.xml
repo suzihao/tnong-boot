@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tnong.boot.system.tenant.mapper.SysTenantMapper">
+
+    <resultMap id="BaseResultMap" type="com.tnong.boot.system.tenant.domain.entity.SysTenant">
+        <id property="id" column="id"/>
+        <result property="tenantCode" column="tenant_code"/>
+        <result property="name" column="name"/>
+        <result property="contactName" column="contact_name"/>
+        <result property="contactPhone" column="contact_phone"/>
+        <result property="contactEmail" column="contact_email"/>
+        <result property="status" column="status"/>
+        <result property="expireTime" column="expire_time"/>
+        <result property="remark" column="remark"/>
+        <result property="deleteFlag" column="delete_flag"/>
+        <result property="createdTime" column="created_time"/>
+        <result property="createdUser" column="created_user"/>
+        <result property="updatedTime" column="updated_time"/>
+        <result property="updatedUser" column="updated_user"/>
+        <result property="version" column="version"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, tenant_code, name, contact_name, contact_phone, contact_email,
+        status, expire_time, remark, delete_flag,
+        created_time, created_user, updated_time, updated_user, version
+    </sql>
+
+    <sql id="Common_Where_Clause">
+        <where>
+            AND delete_flag = 0
+            <if test="query != null">
+                <if test="query.tenantCode != null and query.tenantCode != ''">
+                    AND tenant_code = #{query.tenantCode}
+                </if>
+                <if test="query.name != null and query.name != ''">
+                    AND name LIKE CONCAT('%', #{query.name}, '%')
+                </if>
+                <if test="query.status != null">
+                    AND status = #{query.status}
+                </if>
+            </if>
+        </where>
+    </sql>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM sys_tenant
+        WHERE id = #{id}
+        AND delete_flag = 0
+    </select>
+
+    <select id="selectByTenantCode" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM sys_tenant
+        WHERE tenant_code = #{tenantCode}
+        AND delete_flag = 0
+    </select>
+
+    <select id="selectPageList" resultType="com.tnong.boot.system.tenant.domain.vo.SysTenantVO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM sys_tenant
+        <include refid="Common_Where_Clause"/>
+        ORDER BY created_time DESC
+        LIMIT #{query.offset}, #{query.size}
+    </select>
+
+    <select id="selectCount" resultType="long">
+        SELECT COUNT(*)
+        FROM sys_tenant
+        <include refid="Common_Where_Clause"/>
+    </select>
+
+    <insert id="insert" parameterType="com.tnong.boot.system.tenant.domain.entity.SysTenant"
+            useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO sys_tenant (
+        tenant_code, name, contact_name, contact_phone, contact_email,
+        status, expire_time, remark, delete_flag,
+        created_time, created_user, updated_time, updated_user, version
+        ) VALUES (
+        #{tenantCode}, #{name}, #{contactName}, #{contactPhone}, #{contactEmail},
+        #{status}, #{expireTime}, #{remark}, 0,
+        NOW(), #{createdUser}, NOW(), #{updatedUser}, 0
+        )
+    </insert>
+
+    <update id="updateByIdWithVersion">
+        UPDATE sys_tenant
+        <set>
+            <if test="name != null">name = #{name},</if>
+            <if test="contactName != null">contact_name = #{contactName},</if>
+            <if test="contactPhone != null">contact_phone = #{contactPhone},</if>
+            <if test="contactEmail != null">contact_email = #{contactEmail},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="expireTime != null">expire_time = #{expireTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            updated_time = NOW(),
+            updated_user = #{updatedUser},
+            version = version + 1
+        </set>
+        WHERE id = #{id}
+        AND version = #{version}
+        AND delete_flag = 0
+    </update>
+
+    <update id="deleteById">
+        UPDATE sys_tenant
+        SET delete_flag = 1,
+        updated_time = NOW(),
+        updated_user = #{updatedUser},
+        version = version + 1
+        WHERE id = #{id}
+        AND version = #{version}
+        AND delete_flag = 0
+    </update>
+
+</mapper>

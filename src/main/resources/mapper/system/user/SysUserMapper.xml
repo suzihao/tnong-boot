@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tnong.boot.system.user.mapper.SysUserMapper">
+
+    <!-- 结果映射 -->
+    <resultMap id="BaseResultMap" type="com.tnong.boot.system.user.domain.entity.SysUser">
+        <id property="id" column="id"/>
+        <result property="tenantId" column="tenant_id"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="username" column="username"/>
+        <result property="password" column="password"/>
+        <result property="nickname" column="nickname"/>
+        <result property="avatar" column="avatar"/>
+        <result property="email" column="email"/>
+        <result property="mobile" column="mobile"/>
+        <result property="status" column="status"/>
+        <result property="deleteFlag" column="delete_flag"/>
+        <result property="lastLoginIp" column="last_login_ip"/>
+        <result property="lastLoginTime" column="last_login_time"/>
+        <result property="remark" column="remark"/>
+        <result property="createdTime" column="created_time"/>
+        <result property="createdUser" column="created_user"/>
+        <result property="updatedTime" column="updated_time"/>
+        <result property="updatedUser" column="updated_user"/>
+        <result property="version" column="version"/>
+    </resultMap>
+
+    <!-- 基础字段 -->
+    <sql id="Base_Column_List">
+        id, tenant_id, dept_id, username, password, nickname, avatar, email, mobile,
+        status, delete_flag, last_login_ip, last_login_time, remark,
+        created_time, created_user, updated_time, updated_user, version
+    </sql>
+
+    <!-- VO字段（不包含密码） -->
+    <sql id="VO_Column_List">
+        id, tenant_id, dept_id, username, nickname, avatar, email, mobile,
+        status, last_login_ip, last_login_time, remark,
+        created_time, updated_time, version
+    </sql>
+
+    <!-- 通用查询条件 -->
+    <sql id="Common_Where_Clause">
+        <where>
+            AND delete_flag = 0
+            AND tenant_id = #{tenantId}
+            <if test="query != null">
+                <if test="query.username != null and query.username != ''">
+                    AND username LIKE CONCAT('%', #{query.username}, '%')
+                </if>
+                <if test="query.nickname != null and query.nickname != ''">
+                    AND nickname LIKE CONCAT('%', #{query.nickname}, '%')
+                </if>
+                <if test="query.mobile != null and query.mobile != ''">
+                    AND mobile = #{query.mobile}
+                </if>
+                <if test="query.deptId != null">
+                    AND dept_id = #{query.deptId}
+                </if>
+                <if test="query.status != null">
+                    AND status = #{query.status}
+                </if>
+            </if>
+        </where>
+    </sql>
+
+    <!-- 根据ID查询 -->
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM sys_user
+        WHERE id = #{id}
+        AND tenant_id = #{tenantId}
+        AND delete_flag = 0
+    </select>
+
+    <!-- 根据用户名查询 -->
+    <select id="selectByUsername" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM sys_user
+        WHERE username = #{username}
+        AND tenant_id = #{tenantId}
+        AND delete_flag = 0
+    </select>
+
+    <!-- 分页查询列表 -->
+    <select id="selectPageList" resultType="com.tnong.boot.system.user.domain.vo.SysUserVO">
+        SELECT
+        <include refid="VO_Column_List"/>
+        FROM sys_user
+        <include refid="Common_Where_Clause"/>
+        ORDER BY created_time DESC
+        LIMIT #{query.offset}, #{query.size}
+    </select>
+
+    <!-- 查询总数 -->
+    <select id="selectCount" resultType="long">
+        SELECT COUNT(*)
+        FROM sys_user
+        <include refid="Common_Where_Clause"/>
+    </select>
+
+    <!-- 插入用户 -->
+    <insert id="insert" parameterType="com.tnong.boot.system.user.domain.entity.SysUser"
+            useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO sys_user (
+        tenant_id, dept_id, username, password, nickname, avatar, email, mobile,
+        status, delete_flag, remark, created_time, created_user, updated_time, updated_user, version
+        ) VALUES (
+        #{tenantId}, #{deptId}, #{username}, #{password}, #{nickname}, #{avatar}, #{email}, #{mobile},
+        #{status}, 0, #{remark}, NOW(), #{createdUser}, NOW(), #{updatedUser}, 0
+        )
+    </insert>
+
+    <!-- 更新用户（带乐观锁） -->
+    <update id="updateByIdWithVersion">
+        UPDATE sys_user
+        <set>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="nickname != null">nickname = #{nickname},</if>
+            <if test="avatar != null">avatar = #{avatar},</if>
+            <if test="email != null">email = #{email},</if>
+            <if test="mobile != null">mobile = #{mobile},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="password != null and password != ''">password = #{password},</if>
+            updated_time = NOW(),
+            updated_user = #{updatedUser},
+            version = version + 1
+        </set>
+        WHERE id = #{id}
+        AND tenant_id = #{tenantId}
+        AND version = #{version}
+        AND delete_flag = 0
+    </update>
+
+    <!-- 逻辑删除（带乐观锁） -->
+    <update id="deleteById">
+        UPDATE sys_user
+        SET delete_flag = 1,
+        updated_time = NOW(),
+        updated_user = #{updatedUser},
+        version = version + 1
+        WHERE id = #{id}
+        AND tenant_id = #{tenantId}
+        AND version = #{version}
+        AND delete_flag = 0
+    </update>
+
+</mapper>

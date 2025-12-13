@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tnong.boot.system.dict.mapper.SysDictTypeMapper">
+
+    <select id="selectById" resultType="com.tnong.boot.system.dict.domain.entity.SysDictType">
+        SELECT * FROM sys_dict_type WHERE id = #{id} AND tenant_id = #{tenantId} AND delete_flag = 0
+    </select>
+
+    <select id="selectByTypeCode" resultType="com.tnong.boot.system.dict.domain.entity.SysDictType">
+        SELECT * FROM sys_dict_type WHERE type_code = #{typeCode} AND tenant_id = #{tenantId} AND delete_flag = 0
+    </select>
+
+    <select id="selectPageList" resultType="com.tnong.boot.system.dict.domain.entity.SysDictType">
+        SELECT * FROM sys_dict_type
+        <where>
+            AND delete_flag = 0 AND tenant_id = #{tenantId}
+            <if test="query.typeCode != null and query.typeCode != ''">AND type_code = #{query.typeCode}</if>
+            <if test="query.name != null and query.name != ''">AND name LIKE CONCAT('%', #{query.name}, '%')</if>
+            <if test="query.status != null">AND status = #{query.status}</if>
+        </where>
+        ORDER BY created_time DESC
+        LIMIT #{query.offset}, #{query.size}
+    </select>
+
+    <select id="selectCount" resultType="long">
+        SELECT COUNT(*) FROM sys_dict_type
+        <where>
+            AND delete_flag = 0 AND tenant_id = #{tenantId}
+            <if test="query.typeCode != null and query.typeCode != ''">AND type_code = #{query.typeCode}</if>
+            <if test="query.name != null and query.name != ''">AND name LIKE CONCAT('%', #{query.name}, '%')</if>
+            <if test="query.status != null">AND status = #{query.status}</if>
+        </where>
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO sys_dict_type (tenant_id, type_code, name, status, remark, delete_flag, created_time, created_user, updated_time, updated_user, version)
+        VALUES (#{tenantId}, #{typeCode}, #{name}, #{status}, #{remark}, 0, NOW(), #{createdUser}, NOW(), #{updatedUser}, 0)
+    </insert>
+
+    <update id="updateByIdWithVersion">
+        UPDATE sys_dict_type
+        <set>
+            <if test="name != null">name = #{name},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            updated_time = NOW(), updated_user = #{updatedUser}, version = version + 1
+        </set>
+        WHERE id = #{id} AND tenant_id = #{tenantId} AND version = #{version} AND delete_flag = 0
+    </update>
+
+    <update id="deleteById">
+        UPDATE sys_dict_type SET delete_flag = 1, updated_time = NOW(), updated_user = #{updatedUser}, version = version + 1
+        WHERE id = #{id} AND tenant_id = #{tenantId} AND version = #{version} AND delete_flag = 0
+    </update>
+
+</mapper>
