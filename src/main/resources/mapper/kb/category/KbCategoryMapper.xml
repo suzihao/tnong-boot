@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tnong.boot.kb.category.mapper.KbCategoryMapper">
+
+    <resultMap id="BaseResultMap" type="com.tnong.boot.kb.category.domain.entity.KbCategory">
+        <id column="id" property="id"/>
+        <result column="tenant_id" property="tenantId"/>
+        <result column="parent_id" property="parentId"/>
+        <result column="name" property="name"/>
+        <result column="icon" property="icon"/>
+        <result column="sort" property="sort"/>
+        <result column="description" property="description"/>
+        <result column="status" property="status"/>
+        <result column="delete_flag" property="deleteFlag"/>
+        <result column="created_time" property="createdTime"/>
+        <result column="created_user" property="createdUser"/>
+        <result column="updated_time" property="updatedTime"/>
+        <result column="updated_user" property="updatedUser"/>
+        <result column="version" property="version"/>
+    </resultMap>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO kb_category (
+            tenant_id, parent_id, name, icon, sort, description,
+            status, delete_flag, created_user, updated_user
+        ) VALUES (
+            #{tenantId}, #{parentId}, #{name}, #{icon}, #{sort}, #{description},
+            #{status}, 0, #{createdUser}, #{updatedUser}
+        )
+    </insert>
+
+    <update id="updateById">
+        UPDATE kb_category
+        SET parent_id = #{parentId},
+            name = #{name},
+            icon = #{icon},
+            sort = #{sort},
+            description = #{description},
+            status = #{status},
+            updated_user = #{updatedUser},
+            version = version + 1
+        WHERE id = #{id}
+          AND delete_flag = 0
+          AND version = #{version}
+    </update>
+
+    <update id="deleteById">
+        UPDATE kb_category
+        SET delete_flag = 1,
+            updated_user = #{updatedUser}
+        WHERE id = #{id}
+          AND delete_flag = 0
+    </update>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT *
+        FROM kb_category
+        WHERE id = #{id}
+          AND delete_flag = 0
+    </select>
+
+    <select id="selectListByTenantId" resultMap="BaseResultMap">
+        SELECT *
+        FROM kb_category
+        WHERE tenant_id = #{tenantId}
+          AND delete_flag = 0
+        ORDER BY sort ASC, id ASC
+    </select>
+
+    <select id="selectListByParentId" resultMap="BaseResultMap">
+        SELECT *
+        FROM kb_category
+        WHERE parent_id = #{parentId}
+          AND tenant_id = #{tenantId}
+          AND delete_flag = 0
+        ORDER BY sort ASC, id ASC
+    </select>
+
+</mapper>
