@@ -7,6 +7,7 @@
     <!-- 结果映射 -->
     <resultMap id="BaseResultMap" type="com.tnong.boot.system.user.domain.entity.SysUser">
         <id property="id" column="id"/>
+        <result property="userId" column="user_id"/>
         <result property="tenantId" column="tenant_id"/>
         <result property="deptId" column="dept_id"/>
         <result property="username" column="username"/>
@@ -29,14 +30,14 @@
 
     <!-- 基础字段 -->
     <sql id="Base_Column_List">
-        id, tenant_id, dept_id, username, password, nickname, avatar, email, mobile,
+        id, user_id, tenant_id, dept_id, username, password, nickname, avatar, email, mobile,
         status, delete_flag, last_login_ip, last_login_time, remark,
         created_time, created_user, updated_time, updated_user, version
     </sql>
 
     <!-- VO字段（不包含密码） -->
     <sql id="VO_Column_List">
-        id, tenant_id, dept_id, username, nickname, avatar, email, mobile,
+        id, user_id, tenant_id, dept_id, username, nickname, avatar, email, mobile,
         status, last_login_ip, last_login_time, remark,
         created_time, updated_time, version
     </sql>
@@ -86,6 +87,36 @@
         AND delete_flag = 0
     </select>
 
+    <!-- 根据工号ID查询 -->
+    <select id="selectByEmployeeId" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM sys_user
+        WHERE employee_id = #{employeeId}
+        AND tenant_id = #{tenantId}
+        AND delete_flag = 0
+    </select>
+
+    <!-- 根据邮箱查询 -->
+    <select id="selectByEmail" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM sys_user
+        WHERE email = #{email}
+        AND tenant_id = #{tenantId}
+        AND delete_flag = 0
+    </select>
+
+    <!-- 根据手机号查询 -->
+    <select id="selectByMobile" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM sys_user
+        WHERE mobile = #{mobile}
+        AND tenant_id = #{tenantId}
+        AND delete_flag = 0
+    </select>
+
     <!-- 分页查询列表 -->
     <select id="selectPageList" resultType="com.tnong.boot.system.user.domain.vo.SysUserVO">
         SELECT
@@ -107,10 +138,10 @@
     <insert id="insert" parameterType="com.tnong.boot.system.user.domain.entity.SysUser"
             useGeneratedKeys="true" keyProperty="id">
         INSERT INTO sys_user (
-        tenant_id, dept_id, username, password, nickname, avatar, email, mobile,
+        user_id, tenant_id, dept_id, username, password, nickname, avatar, email, mobile,
         status, delete_flag, remark, created_time, created_user, updated_time, updated_user, version
         ) VALUES (
-        #{tenantId}, #{deptId}, #{username}, #{password}, #{nickname}, #{avatar}, #{email}, #{mobile},
+        #{userId}, #{tenantId}, #{deptId}, #{username}, #{password}, #{nickname}, #{avatar}, #{email}, #{mobile},
         #{status}, 0, #{remark}, NOW(), #{createdUser}, NOW(), #{updatedUser}, 0
         )
     </insert>

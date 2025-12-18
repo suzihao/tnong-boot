@@ -38,12 +38,14 @@ public class AuthController {
     }
 
     /**
-     * 获取当前登录用户信息
+     * 企业微信登录回调
      */
-    @GetMapping("/info")
-    public Result<LoginVO> getUserInfo() {
-        // TODO: 从 UserContext 获取当前用户信息
-        return Result.success();
+    @GetMapping("/wecom/callback")
+    public Result<LoginVO> wecomCallback(@RequestParam String code,
+                                         @RequestParam(required = false) String state,
+                                         HttpServletRequest request) {
+        LoginVO loginVO = authService.wecomLogin(code, state, request);
+        return Result.success("登录成功", loginVO);
     }
 
     /**

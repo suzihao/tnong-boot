@@ -23,6 +23,21 @@ public interface SysUserMapper {
     SysUser selectByUsername(@Param("username") String username, @Param("tenantId") Long tenantId);
 
     /**
+     * 根据工号ID查询用户
+     */
+    SysUser selectByEmployeeId(@Param("employeeId") String employeeId, @Param("tenantId") Long tenantId);
+
+    /**
+     * 根据邮箱查询用户
+     */
+    SysUser selectByEmail(@Param("email") String email, @Param("tenantId") Long tenantId);
+
+    /**
+     * 根据手机号查询用户
+     */
+    SysUser selectByMobile(@Param("mobile") String mobile, @Param("tenantId") Long tenantId);
+
+    /**
      * 分页查询用户列表
      */
     List<SysUserVO> selectPageList(@Param("query") SysUserQueryDTO query, @Param("tenantId") Long tenantId);

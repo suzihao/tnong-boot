@@ -14,9 +14,14 @@ public class SysUser implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 用户ID
+     * 用户ID（物理主键）
      */
     private Long id;
+
+    /**
+     * 业务用户ID（雪花算法生成，对外使用，唯一标识）
+     */
+    private Long userId;
 
     /**
      * 租户ID

@@ -27,3 +27,13 @@ mybatis:
 logging:
   level:
     com.tnong.boot: debug
+
+wecom:
+  #  公司id
+  corp-id: wx10bf5a776ea4b17a
+  #  应用id
+  agent-id: 1000181
+    #  应用密钥按需填入
+  secret: ${WECOM_SECRET:}
+    #  OAuth2 回调地址
+  redirect-uri: ${WECOM_REDIRECT_URI:http://localhost:8080/api/auth/wecom/callback}
