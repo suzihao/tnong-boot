@@ -30,9 +30,9 @@ logging:
 
 wecom:
   #  公司id
-  corp-id: wx10bf5a776ea4b17a
+  corp-id: ${WECOM_CORP_ID:}
   #  应用id
-  agent-id: 1000181
+  agent-id: ${WECOM_AGENT_ID:}
     #  应用密钥按需填入
   secret: ${WECOM_SECRET:}
     #  OAuth2 回调地址
