@@ -41,9 +41,9 @@ public interface KbDocumentMapper {
     List<KbDocument> selectListByTenantId(@Param("tenantId") Long tenantId);
     
     /**
-     * 搜索文档（根据标题）
+     * 搜索文档（根据标题、内容、标签）
      */
-    List<KbDocument> searchByTitle(@Param("title") String title, @Param("tenantId") Long tenantId);
+    List<KbDocument> searchByKeyword(@Param("keyword") String keyword, @Param("tenantId") Long tenantId);
     
     /**
      * 增加浏览次数

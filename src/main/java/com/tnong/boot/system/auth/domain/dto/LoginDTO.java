@@ -22,7 +22,7 @@ public class LoginDTO implements Serializable {
     private String password;
     
     /**
-     * 租户编码（可选，如果不传则使用默认租户）
+     * 业务租户ID（可选，如果不传则使用默认租户）
      */
-    private String tenantCode;
+    private Long tenantId;
 }

@@ -13,9 +13,9 @@ import java.util.List;
 public interface SysUserMapper {
 
     /**
-     * 根据ID查询用户
+     * 根据用户userId查询用户
      */
-    SysUser selectById(@Param("id") Long id, @Param("tenantId") Long tenantId);
+    SysUser selectById(@Param("userId") Long userId, @Param("tenantId") Long tenantId);
 
     /**
      * 根据用户名查询用户

@@ -18,9 +18,9 @@ public interface SysTenantMapper {
     SysTenant selectById(@Param("id") Long id);
 
     /**
-     * 根据租户编码查询
+     * 根据业务租户ID查询
      */
-    SysTenant selectByTenantCode(@Param("tenantCode") String tenantCode);
+    SysTenant selectByTenantId(@Param("tenantId") Long tenantId);
 
     /**
      * 分页查询租户列表

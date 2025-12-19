@@ -67,7 +67,7 @@ public class AuthServiceImpl implements AuthService {
         }
 
         // 2. 获取租户ID
-        Long tenantId = getTenantId(loginDTO.getTenantCode());
+        Long tenantId = getTenantId(loginDTO.getTenantId());
         
         // 3. 查询用户
         SysUser user = sysUserMapper.selectByUsername(loginDTO.getUsername(), tenantId);
@@ -80,29 +80,29 @@ public class AuthServiceImpl implements AuthService {
         
         // 5. 验证密码
         if (!PasswordUtil.matches(loginDTO.getPassword(), user.getPassword())) {
-            recordLoginLog(user.getId(), tenantId, loginDTO.getUsername(), 0, "密码错误", request);
+            recordLoginLog(user.getUserId(), tenantId, loginDTO.getUsername(), 0, "密码错误", request);
             throw new BusinessException("用户名或密码错误");
         }
         
         // 6. 检查用户状态
         if (!CommonConstant.STATUS_ENABLE.equals(user.getStatus())) {
-            recordLoginLog(user.getId(), tenantId, loginDTO.getUsername(), 0, "用户已被禁用", request);
+            recordLoginLog(user.getUserId(), tenantId, loginDTO.getUsername(), 0, "用户已被禁用", request);
             throw new BusinessException("用户已被禁用");
         }
         
         // 7. 生成 Token
-        String token = JwtUtil.generateToken(user.getId(), user.getUsername(), tenantId);
+        String token = JwtUtil.generateToken(user.getUserId(), user.getUsername(), tenantId);
         
         // 8. 更新最后登录信息
         updateLastLogin(user, request);
         
         // 9. 记录登录成功日志
-        recordLoginLog(user.getId(), tenantId, loginDTO.getUsername(), 1, "登录成功", request);
+        recordLoginLog(user.getUserId(), tenantId, loginDTO.getUsername(), 1, "登录成功", request);
         
         // 10. 构造返回结果
         LoginVO loginVO = new LoginVO();
         loginVO.setToken(token);
-        loginVO.setUserId(user.getId());
+        loginVO.setUserId(user.getUserId());
         loginVO.setTenantId(tenantId);
         loginVO.setUsername(user.getUsername());
         loginVO.setNickname(user.getNickname());
@@ -157,23 +157,23 @@ public class AuthServiceImpl implements AuthService {
 
         // 8. 检查用户状态
         if (!CommonConstant.STATUS_ENABLE.equals(user.getStatus())) {
-            recordLoginLog(user.getId(), tenantId, user.getUsername(), 0, "用户已被禁用", request);
+            recordLoginLog(user.getUserId(), tenantId, user.getUsername(), 0, "用户已被禁用", request);
             throw new BusinessException("用户已被禁用");
         }
 
         // 9. 生成 Token
-        String token = JwtUtil.generateToken(user.getId(), user.getUsername(), tenantId);
+        String token = JwtUtil.generateToken(user.getUserId(), user.getUsername(), tenantId);
 
         // 10. 更新最后登录信息
         updateLastLogin(user, request);
 
         // 11. 记录登录成功日志（此处暂用同一日志类型）
-        recordLoginLog(user.getId(), tenantId, user.getUsername(), 1, "企业微信登录成功", request);
+        recordLoginLog(user.getUserId(), tenantId, user.getUsername(), 1, "企业微信登录成功", request);
 
         // 12. 构造返回结果
         LoginVO loginVO = new LoginVO();
         loginVO.setToken(token);
-        loginVO.setUserId(user.getId());
+        loginVO.setUserId(user.getUserId());
         loginVO.setTenantId(tenantId);
         loginVO.setUsername(user.getUsername());
         loginVO.setNickname(user.getNickname());
@@ -332,13 +332,13 @@ public class AuthServiceImpl implements AuthService {
     /**
      * 获取租户ID
      */
-    private Long getTenantId(String tenantCode) {
-        // 如果没有传租户编码，使用默认租户
-        if (!StringUtils.hasText(tenantCode)) {
-            tenantCode = "DEFAULT";
+    private Long getTenantId(Long tenantId) {
+        // 如果没有传租户ID，使用默认租户
+        if (tenantId == null) {
+            tenantId = 1L;
         }
         
-        SysTenant tenant = sysTenantMapper.selectByTenantCode(tenantCode);
+        SysTenant tenant = sysTenantMapper.selectByTenantId(tenantId);
         if (tenant == null) {
             throw new BusinessException("租户不存在");
         }

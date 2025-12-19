@@ -36,7 +36,10 @@ public interface KbCategoryMapper {
     List<KbCategory> selectListByTenantId(@Param("tenantId") Long tenantId);
     
     /**
-     * 查询子目录
+     * 更新父级和排序
      */
-    List<KbCategory> selectListByParentId(@Param("parentId") Long parentId, @Param("tenantId") Long tenantId);
+    int updateParentAndSort(@Param("id") Long id,
+                            @Param("parentId") Long parentId,
+                            @Param("sort") Integer sort,
+                            @Param("updatedUser") Long updatedUser);
 }

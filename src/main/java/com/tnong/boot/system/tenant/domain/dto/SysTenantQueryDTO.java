@@ -13,9 +13,9 @@ public class SysTenantQueryDTO implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 租户编码
+     * 业务租户ID
      */
-    private String tenantCode;
+    private Long tenantId;
 
     /**
      * 租户名称（模糊查询）

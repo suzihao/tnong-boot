@@ -19,9 +19,9 @@ public class SysTenantSaveDTO implements Serializable {
     private Long id;
 
     /**
-     * 租户编码，唯一
+     * 业务租户ID（更新时必填）
      */
-    private String tenantCode;
+    private Long tenantId;
 
     /**
      * 租户名称

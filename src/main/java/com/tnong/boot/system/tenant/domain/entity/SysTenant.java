@@ -14,14 +14,14 @@ public class SysTenant implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 租户ID
+     * 租户ID（物理主键）
      */
     private Long id;
 
     /**
-     * 租户编码，唯一
+     * 业务租户ID（雪花算法生成，对外使用，唯一标识）
      */
-    private String tenantCode;
+    private Long tenantId;
 
     /**
      * 租户名称

@@ -78,11 +78,15 @@
         ORDER BY updated_time DESC
     </select>
 
-    <select id="searchByTitle" resultMap="BaseResultMap">
+    <select id="searchByKeyword" resultMap="BaseResultMap">
         SELECT *
         FROM kb_document
         WHERE tenant_id = #{tenantId}
-          AND title LIKE CONCAT('%', #{title}, '%')
+          AND (
+            title LIKE CONCAT('%', #{keyword}, '%')
+            OR content LIKE CONCAT('%', #{keyword}, '%')
+            OR tags LIKE CONCAT('%', #{keyword}, '%')
+          )
           AND delete_flag = 0
         ORDER BY updated_time DESC
     </select>

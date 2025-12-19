@@ -4,6 +4,7 @@ import com.tnong.boot.common.constant.CommonConstant;
 import com.tnong.boot.common.exception.BusinessException;
 import com.tnong.boot.common.exception.OptimisticLockException;
 import com.tnong.boot.common.web.PageResult;
+import com.tnong.boot.common.util.SnowflakeIdGenerator;
 import com.tnong.boot.system.user.domain.dto.SysUserQueryDTO;
 import com.tnong.boot.system.user.domain.dto.SysUserSaveDTO;
 import com.tnong.boot.system.user.domain.entity.SysUser;
@@ -62,6 +63,7 @@ public class SysUserServiceImpl implements SysUserService {
 
         SysUser user = new SysUser();
         BeanUtils.copyProperties(dto, user);
+        user.setUserId(SnowflakeIdGenerator.generateId());
         user.setPassword(encodedPassword);
         user.setTenantId(tenantId);
         user.setCreatedUser(currentUserId);
@@ -72,7 +74,7 @@ public class SysUserServiceImpl implements SysUserService {
         if (rows == 0) {
             throw new BusinessException("新增用户失败");
         }
-        return user.getId();
+        return user.getUserId();
     }
 
     @Override

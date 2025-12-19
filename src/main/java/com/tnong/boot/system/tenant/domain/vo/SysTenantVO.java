@@ -19,9 +19,9 @@ public class SysTenantVO implements Serializable {
     private Long id;
 
     /**
-     * 租户编码
+     * 业务租户ID
      */
-    private String tenantCode;
+    private Long tenantId;
 
     /**
      * 租户名称

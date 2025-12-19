@@ -34,9 +34,9 @@ public class KbDocumentController {
      * 搜索文档
      */
     @GetMapping("/search")
-    public Result<List<KbDocument>> search(@RequestParam String title) {
+    public Result<List<KbDocument>> search(@RequestParam String keyword) {
         Long tenantId = UserContext.getTenantId();
-        List<KbDocument> list = kbDocumentMapper.searchByTitle(title, tenantId);
+        List<KbDocument> list = kbDocumentMapper.searchByKeyword(keyword, tenantId);
         return Result.success(list);
     }
 
@@ -55,10 +55,10 @@ public class KbDocumentController {
      * 创建文档
      */
     @PostMapping
-    public Result<String> create(@RequestBody KbDocumentDTO dto) {
+    public Result<Long> create(@RequestBody KbDocumentDTO dto) {
         Long tenantId = UserContext.getTenantId();
-        Long userId = UserContext.getUserId();
-
+        Long currentUserBizId = UserContext.getUserId();
+    
         KbDocument document = new KbDocument();
         document.setTenantId(tenantId);
         document.setCategoryId(dto.getCategoryId());
@@ -67,11 +67,11 @@ public class KbDocumentController {
         document.setTags(dto.getTags());
         document.setSort(dto.getSort() != null ? dto.getSort() : 0);
         document.setStatus(dto.getStatus() != null ? dto.getStatus() : 1);
-        document.setCreatedUser(userId);
-        document.setUpdatedUser(userId);
-
+        document.setCreatedUser(currentUserBizId);
+        document.setUpdatedUser(currentUserBizId);
+    
         kbDocumentMapper.insert(document);
-        return Result.success("创建成功");
+        return Result.success("创建成功", document.getId());
     }
 
     /**
@@ -79,8 +79,8 @@ public class KbDocumentController {
      */
     @PutMapping("/{id}")
     public Result<String> update(@PathVariable Long id, @RequestBody KbDocumentDTO dto) {
-        Long userId = UserContext.getUserId();
-
+        Long currentUserBizId = UserContext.getUserId();
+    
         KbDocument document = new KbDocument();
         document.setId(id);
         document.setCategoryId(dto.getCategoryId());
@@ -89,9 +89,9 @@ public class KbDocumentController {
         document.setTags(dto.getTags());
         document.setSort(dto.getSort());
         document.setStatus(dto.getStatus());
-        document.setUpdatedUser(userId);
+        document.setUpdatedUser(currentUserBizId);
         document.setVersion(dto.getVersion());
-
+    
         int rows = kbDocumentMapper.updateById(document);
         if (rows == 0) {
             return Result.fail("更新失败，数据可能已被修改");
@@ -104,8 +104,8 @@ public class KbDocumentController {
      */
     @DeleteMapping("/{id}")
     public Result<String> delete(@PathVariable Long id) {
-        Long userId = UserContext.getUserId();
-        kbDocumentMapper.deleteById(id, userId);
+        Long currentUserBizId = UserContext.getUserId();
+        kbDocumentMapper.deleteById(id, currentUserBizId);
         return Result.success("删除成功");
     }
 }

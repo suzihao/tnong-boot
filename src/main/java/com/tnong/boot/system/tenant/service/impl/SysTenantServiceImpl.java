@@ -48,13 +48,13 @@ public class SysTenantServiceImpl implements SysTenantService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Long save(SysTenantSaveDTO dto, Long currentUserId) {
-        if (!StringUtils.hasText(dto.getTenantCode())) {
-            throw new BusinessException("租户编码不能为空");
+        if (dto.getTenantId() == null) {
+            throw new BusinessException("租户ID不能为空");
         }
 
-        SysTenant existTenant = sysTenantMapper.selectByTenantCode(dto.getTenantCode());
+        SysTenant existTenant = sysTenantMapper.selectByTenantId(dto.getTenantId());
         if (existTenant != null) {
-            throw new BusinessException("租户编码已存在");
+            throw new BusinessException("租户ID已存在");
         }
 
         SysTenant tenant = new SysTenant();
@@ -85,15 +85,14 @@ public class SysTenantServiceImpl implements SysTenantService {
             throw new BusinessException("租户不存在或已删除");
         }
 
-        if (StringUtils.hasText(dto.getTenantCode()) && !dto.getTenantCode().equals(dbTenant.getTenantCode())) {
-            SysTenant existTenant = sysTenantMapper.selectByTenantCode(dto.getTenantCode());
-            if (existTenant != null) {
-                throw new BusinessException("租户编码已存在");
-            }
+        // 租户ID不允许修改
+        if (dto.getTenantId() != null && !dto.getTenantId().equals(dbTenant.getTenantId())) {
+            throw new BusinessException("租户ID不允许修改");
         }
 
         SysTenant tenant = new SysTenant();
         BeanUtils.copyProperties(dto, tenant);
+        tenant.setTenantId(null); // 确保不修改tenantId
         tenant.setUpdatedUser(currentUserId);
 
         int rows = sysTenantMapper.updateByIdWithVersion(tenant);

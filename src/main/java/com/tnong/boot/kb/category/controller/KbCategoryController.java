@@ -44,20 +44,18 @@ public class KbCategoryController {
      */
     @PostMapping
     public Result<String> create(@RequestBody KbCategoryDTO dto) {
-        Long tenantId = UserContext.getTenantId();
-        Long userId = UserContext.getUserId();
-
+    
         KbCategory category = new KbCategory();
-        category.setTenantId(tenantId);
+        category.setTenantId(UserContext.getTenantId());
         category.setParentId(dto.getParentId() != null ? dto.getParentId() : 0L);
         category.setName(dto.getName());
         category.setIcon(dto.getIcon());
         category.setSort(dto.getSort() != null ? dto.getSort() : 0);
         category.setDescription(dto.getDescription());
         category.setStatus(dto.getStatus() != null ? dto.getStatus() : 1);
-        category.setCreatedUser(userId);
-        category.setUpdatedUser(userId);
-
+        category.setCreatedUser(UserContext.getUserId());
+        category.setUpdatedUser(UserContext.getUserId());
+    
         kbCategoryMapper.insert(category);
         return Result.success("创建成功");
     }
@@ -67,8 +65,8 @@ public class KbCategoryController {
      */
     @PutMapping("/{id}")
     public Result<String> update(@PathVariable Long id, @RequestBody KbCategoryDTO dto) {
-        Long userId = UserContext.getUserId();
-
+        Long currentUserBizId = UserContext.getUserId();
+    
         KbCategory category = new KbCategory();
         category.setId(id);
         category.setParentId(dto.getParentId());
@@ -77,9 +75,9 @@ public class KbCategoryController {
         category.setSort(dto.getSort());
         category.setDescription(dto.getDescription());
         category.setStatus(dto.getStatus());
-        category.setUpdatedUser(userId);
+        category.setUpdatedUser(currentUserBizId);
         category.setVersion(dto.getVersion());
-
+    
         int rows = kbCategoryMapper.updateById(category);
         if (rows == 0) {
             return Result.fail("更新失败，数据可能已被修改");
@@ -88,12 +86,14 @@ public class KbCategoryController {
     }
 
     /**
-     * 删除目录
+     * 拖动调整目录层级与排序
      */
-    @DeleteMapping("/{id}")
-    public Result<String> delete(@PathVariable Long id) {
-        Long userId = UserContext.getUserId();
-        kbCategoryMapper.deleteById(id, userId);
-        return Result.success("删除成功");
+    @PostMapping("/move")
+    public Result<String> move(@RequestParam Long id,
+                               @RequestParam Long parentId,
+                               @RequestParam Integer sort) {
+        Long currentUserBizId = UserContext.getUserId();
+        kbCategoryMapper.updateParentAndSort(id, parentId, sort, currentUserBizId);
+        return Result.success("调整成功");
     }
 }

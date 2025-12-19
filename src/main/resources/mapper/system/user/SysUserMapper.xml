@@ -72,7 +72,7 @@
         SELECT
         <include refid="Base_Column_List"/>
         FROM sys_user
-        WHERE id = #{id}
+        WHERE user_id = #{userId}
         AND tenant_id = #{tenantId}
         AND delete_flag = 0
     </select>

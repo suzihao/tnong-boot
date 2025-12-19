@@ -11,8 +11,8 @@ USE `tnong_boot`;
 -- 1. 租户表
 -- ====================================
 CREATE TABLE `sys_tenant` (
-    `id`            BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '租户ID',
-    `tenant_code`   VARCHAR(64)     NOT NULL COMMENT '租户编码，唯一',
+    `id`            BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '租户ID（物理主键）',
+    `tenant_id`     BIGINT          NOT NULL COMMENT '业务租户ID（雪花算法生成，对外使用，唯一标识）',
     `name`          VARCHAR(128)    NOT NULL COMMENT '租户名称',
     `contact_name`  VARCHAR(64)     NULL COMMENT '联系人姓名',
     `contact_phone` VARCHAR(32)     NULL COMMENT '联系人电话',
@@ -27,7 +27,7 @@ CREATE TABLE `sys_tenant` (
     `updated_user`  BIGINT          NULL COMMENT '更新人ID',
     `version`       INT             NOT NULL DEFAULT 0 COMMENT '乐观锁版本号',
     PRIMARY KEY (`id`),
-    UNIQUE KEY `uk_tenant_code` (`tenant_code`)
+    UNIQUE KEY `uk_tenant_id` (`tenant_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='租户表';
 
 -- ====================================
@@ -414,8 +414,8 @@ CREATE TABLE `sys_job_log` (
 -- ====================================
 
 -- 插入默认租户
-INSERT INTO `sys_tenant` (`id`, `tenant_code`, `name`, `status`, `created_user`, `updated_user`) 
-VALUES (1, 'DEFAULT', '默认租户', 1, 1, 1);
+INSERT INTO `sys_tenant` (`id`, `tenant_id`, `name`, `status`, `created_user`, `updated_user`) 
+VALUES (1, 1000000000, '默认租户', 1, 1, 1);
 
 -- 插入默认部门
 INSERT INTO `sys_dept` (`id`, `tenant_id`, `parent_id`, `name`, `code`, `sort`, `status`, `created_user`, `updated_user`) 

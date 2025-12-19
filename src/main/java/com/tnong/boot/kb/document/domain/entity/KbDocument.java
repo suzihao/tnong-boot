@@ -42,16 +42,16 @@ public class KbDocument {
     
     /** 创建时间 */
     private LocalDateTime createdTime;
-    
+
     /** 创建人ID */
     private Long createdUser;
-    
+        
     /** 更新时间 */
     private LocalDateTime updatedTime;
     
     /** 更新人ID */
     private Long updatedUser;
-    
+        
     /** 乐观锁版本号 */
     private Integer version;
 }
