@@ -72,4 +72,25 @@ public class SysUserController {
         sysUserService.delete(id, tenantId, version, currentUserId);
         return Result.success("删除成功", null);
     }
+
+    /**
+     * 查询用户已分配的角色ID列表
+     */
+    @GetMapping("/{userId}/role-ids")
+    public Result<java.util.List<Long>> getRoleIds(@PathVariable Long userId) {
+        Long tenantId = UserContext.getTenantId();
+        java.util.List<Long> roleIds = sysUserService.getUserRoleIds(userId, tenantId);
+        return Result.success(roleIds);
+    }
+
+    /**
+     * 为用户分配角色
+     */
+    @PostMapping("/{userId}/role-ids")
+    public Result<Void> assignRoles(@PathVariable Long userId, @RequestBody java.util.List<Long> roleIds) {
+        Long tenantId = UserContext.getTenantId();
+        Long currentUserId = UserContext.getUserId();
+        sysUserService.assignRoles(userId, roleIds, tenantId, currentUserId);
+        return Result.success("分配角色成功", null);
+    }
 }

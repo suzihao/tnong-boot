@@ -3,6 +3,7 @@ package com.tnong.boot.system.user.service.impl;
 import com.tnong.boot.common.constant.CommonConstant;
 import com.tnong.boot.common.exception.BusinessException;
 import com.tnong.boot.common.exception.OptimisticLockException;
+import com.tnong.boot.common.util.PasswordUtil;
 import com.tnong.boot.common.web.PageResult;
 import com.tnong.boot.common.util.SnowflakeIdGenerator;
 import com.tnong.boot.system.user.domain.dto.SysUserQueryDTO;
@@ -27,6 +28,7 @@ import java.util.List;
 public class SysUserServiceImpl implements SysUserService {
 
     private final SysUserMapper sysUserMapper;
+    private final com.tnong.boot.system.user.mapper.SysUserRoleMapper sysUserRoleMapper;
 
     @Override
     public PageResult<SysUserVO> pageList(SysUserQueryDTO query, Long tenantId) {
@@ -88,7 +90,7 @@ public class SysUserServiceImpl implements SysUserService {
         }
 
         // 查询当前数据
-        SysUser dbUser = sysUserMapper.selectById(dto.getId(), tenantId);
+        SysUser dbUser = sysUserMapper.selectById(dto.getUserId(), tenantId);
         if (dbUser == null) {
             throw new BusinessException("用户不存在或已删除");
         }
@@ -108,7 +110,7 @@ public class SysUserServiceImpl implements SysUserService {
 
         // 如果需要修改密码，先进行加密
         if (StringUtils.hasText(dto.getPassword())) {
-            user.setPassword(com.tnong.boot.common.util.PasswordUtil.encode(dto.getPassword()));
+            user.setPassword(PasswordUtil.encode(dto.getPassword()));
         }
 
         int rows = sysUserMapper.updateByIdWithVersion(user);
@@ -127,6 +129,22 @@ public class SysUserServiceImpl implements SysUserService {
         int rows = sysUserMapper.deleteById(id, tenantId, version, currentUserId);
         if (rows == 0) {
             throw new OptimisticLockException("删除失败，数据可能已被修改");
+        }
+    }
+
+    @Override
+    public List<Long> getUserRoleIds(Long userId, Long tenantId) {
+        return sysUserRoleMapper.selectRoleIdsByUserId(tenantId, userId);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void assignRoles(Long userId, List<Long> roleIds, Long tenantId, Long currentUserId) {
+        // 先删除用户现有角色
+        sysUserRoleMapper.deleteByUserId(tenantId, userId, currentUserId);
+        // 再批量新增
+        if (roleIds != null && !roleIds.isEmpty()) {
+            sysUserRoleMapper.insertBatch(tenantId, userId, roleIds, currentUserId);
         }
     }
 }

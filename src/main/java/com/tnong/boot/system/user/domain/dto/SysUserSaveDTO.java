@@ -18,6 +18,11 @@ public class SysUserSaveDTO implements Serializable {
     private Long id;
 
     /**
+     * 业务用户ID（雪花算法生成，对外使用，唯一标识）
+     */
+    private Long userId;
+
+    /**
      * 主部门ID
      */
     private Long deptId;

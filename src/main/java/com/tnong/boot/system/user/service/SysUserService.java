@@ -34,4 +34,14 @@ public interface SysUserService {
      * 删除用户
      */
     void delete(Long id, Long tenantId, Integer version, Long currentUserId);
+
+    /**
+     * 查询用户已分配的角色ID列表
+     */
+    java.util.List<Long> getUserRoleIds(Long userId, Long tenantId);
+
+    /**
+     * 为用户分配角色
+     */
+    void assignRoles(Long userId, java.util.List<Long> roleIds, Long tenantId, Long currentUserId);
 }
