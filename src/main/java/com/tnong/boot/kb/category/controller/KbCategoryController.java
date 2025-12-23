@@ -96,4 +96,17 @@ public class KbCategoryController {
         kbCategoryMapper.updateParentAndSort(id, parentId, sort, currentUserBizId);
         return Result.success("调整成功");
     }
+
+    /**
+     * 删除目录
+     */
+    @DeleteMapping("/{id}")
+    public Result<String> delete(@PathVariable Long id) {
+        Long currentUserBizId = UserContext.getUserId();
+        int rows = kbCategoryMapper.deleteById(id, currentUserBizId);
+        if (rows == 0) {
+            return Result.fail("删除失败，目录不存在或已被删除");
+        }
+        return Result.success("删除成功");
+    }
 }
