@@ -15,6 +15,10 @@ public class PasswordUtil {
     private static final String ALGORITHM = "SHA-256";
     private static final int SALT_LENGTH = 16;
 
+    static void main() {
+        System.out.println(encode("123456"));
+    }
+
     /**
      * 加密密码
      */
