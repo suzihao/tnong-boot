@@ -1,0 +1,39 @@
+server:
+  port: 8080
+  address: 0.0.0.0  # 允许局域网访问
+
+spring:
+  application:
+    name: tnong-boot
+  
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3307/tnong_boot_dev?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    username: root
+    password: woyao51mx
+    hikari:
+      minimum-idle: 5
+      maximum-pool-size: 20
+      connection-timeout: 30000
+      connection-test-query: SELECT 1
+
+mybatis:
+  mapper-locations: classpath:/mapper/**/*.xml
+  type-aliases-package: com.tnong.boot.**.domain.entity
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+logging:
+  level:
+    com.tnong.boot: debug
+
+wecom:
+  #  公司id
+  corp-id: ${WECOM_CORP_ID:}
+  #  应用id
+  agent-id: ${WECOM_AGENT_ID:}
+    #  应用密钥按需填入
+  secret: ${WECOM_SECRET:}
+    #  OAuth2 回调地址
+  redirect-uri: ${WECOM_REDIRECT_URI:http://localhost:8080/api/auth/wecom/callback}

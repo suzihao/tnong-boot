@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tnong.boot.system.log.mapper.SysLoginLogMapper">
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO sys_login_log (
+            tenant_id, user_id, username, login_type, status, 
+            ip_address, user_agent, os, browser, msg, login_time
+        ) VALUES (
+            #{tenantId}, #{userId}, #{username}, #{loginType}, #{status},
+            #{ipAddress}, #{userAgent}, #{os}, #{browser}, #{msg}, NOW()
+        )
+    </insert>
+
+</mapper>

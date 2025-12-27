@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tnong.boot.system.config.mapper.SysConfigMapper">
+
+    <select id="selectById" resultType="com.tnong.boot.system.config.domain.entity.SysConfig">
+        SELECT * FROM sys_config WHERE id = #{id} AND tenant_id = #{tenantId} AND delete_flag = 0
+    </select>
+
+    <select id="selectByKey" resultType="com.tnong.boot.system.config.domain.entity.SysConfig">
+        SELECT * FROM sys_config WHERE config_key = #{configKey} AND tenant_id = #{tenantId} AND delete_flag = 0
+    </select>
+
+    <select id="selectList" resultType="com.tnong.boot.system.config.domain.entity.SysConfig">
+        SELECT * FROM sys_config WHERE tenant_id = #{tenantId} AND delete_flag = 0 ORDER BY created_time DESC
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO sys_config (tenant_id, config_key, config_name, config_value, config_type, is_system, status, remark, delete_flag, created_time, created_user, updated_time, updated_user, version)
+        VALUES (#{tenantId}, #{configKey}, #{configName}, #{configValue}, #{configType}, #{isSystem}, #{status}, #{remark}, 0, NOW(), #{createdUser}, NOW(), #{updatedUser}, 0)
+    </insert>
+
+    <update id="updateByIdWithVersion">
+        UPDATE sys_config
+        <set>
+            <if test="configName != null">config_name = #{configName},</if>
+            <if test="configValue != null">config_value = #{configValue},</if>
+            <if test="configType != null">config_type = #{configType},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            updated_time = NOW(), updated_user = #{updatedUser}, version = version + 1
+        </set>
+        WHERE id = #{id} AND tenant_id = #{tenantId} AND version = #{version} AND delete_flag = 0
+    </update>
+
+    <update id="deleteById">
+        UPDATE sys_config SET delete_flag = 1, updated_time = NOW(), updated_user = #{updatedUser}, version = version + 1
+        WHERE id = #{id} AND tenant_id = #{tenantId} AND version = #{version} AND delete_flag = 0
+    </update>
+
+</mapper>
