@@ -126,10 +126,10 @@ spring:
 
 ## 待完成模块
 
-- [ ] 租户管理（sys_tenant）
+- [x] 租户管理（sys_tenant）
 - [ ] 部门管理（sys_dept）
-- [ ] 角色管理（sys_role）
-- [ ] 菜单管理（sys_menu）
+- [x] 角色管理（sys_role）
+- [x] 菜单管理（sys_menu）
 - [ ] 字典管理（sys_dict_type / sys_dict_item）
 - [ ] 系统配置（sys_config）
 - [ ] 操作日志（sys_oper_log）

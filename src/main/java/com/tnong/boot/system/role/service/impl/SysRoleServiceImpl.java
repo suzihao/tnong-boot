@@ -3,6 +3,8 @@ package com.tnong.boot.system.role.service.impl;
 import com.tnong.boot.common.constant.CommonConstant;
 import com.tnong.boot.common.exception.BusinessException;
 import com.tnong.boot.common.exception.OptimisticLockException;
+import com.tnong.boot.system.menu.domain.entity.SysMenu;
+import com.tnong.boot.system.menu.mapper.SysMenuMapper;
 import com.tnong.boot.system.role.domain.dto.RoleMenuAssignDTO;
 import com.tnong.boot.system.role.domain.dto.SysRoleSaveDTO;
 import com.tnong.boot.system.role.domain.entity.SysRole;
@@ -15,8 +17,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,6 +26,7 @@ public class SysRoleServiceImpl implements SysRoleService {
 
     private final SysRoleMapper sysRoleMapper;
     private final SysRoleMenuMapper sysRoleMenuMapper;
+    private final SysMenuMapper sysMenuMapper;
 
     @Override
     public List<SysRoleVO> list(Long tenantId) {
@@ -118,7 +120,45 @@ public class SysRoleServiceImpl implements SysRoleService {
 
     @Override
     public List<Long> listMenuIdsByRole(Long roleId, Long tenantId) {
-        return sysRoleMenuMapper.selectMenuIdsByRoleId(tenantId, roleId);
+        // 查询角色的所有菜单ID（包含父节点和叶子节点）
+        List<Long> allMenuIds = sysRoleMenuMapper.selectMenuIdsByRoleId(tenantId, roleId);
+
+        // 过滤出叶子节点，只返回叶子节点给前端
+        // 这样 NTree 组件可以正确显示半选中状态
+        return filterLeafMenuIds(allMenuIds, tenantId);
+    }
+
+    /**
+     * 过滤出叶子节点（没有子节点的菜单）
+     * 用于前端显示，只返回叶子节点，让前端树组件自动处理父节点的半选中状态
+     */
+    private List<Long> filterLeafMenuIds(List<Long> menuIds, Long tenantId) {
+        if (menuIds == null || menuIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<Long> leafIds = new ArrayList<>();
+
+        // 查询所有菜单
+        List<SysMenu> allMenus = sysMenuMapper.selectList(tenantId);
+
+        // 构建父子关系：记录每个菜单的子菜单ID
+        Map<Long, Set<Long>> childrenMap = new HashMap<>();
+        for (SysMenu menu : allMenus) {
+            Long parentId = menu.getParentId();
+            if (parentId != null && parentId != 0L) {
+                childrenMap.computeIfAbsent(parentId, k -> new HashSet<>()).add(menu.getId());
+            }
+        }
+
+        // 只保留叶子节点（没有子节点的菜单）
+        for (Long menuId : menuIds) {
+            if (!childrenMap.containsKey(menuId) || childrenMap.get(menuId).isEmpty()) {
+                leafIds.add(menuId);
+            }
+        }
+
+        return leafIds;
     }
 
     @Override
@@ -133,10 +173,37 @@ public class SysRoleServiceImpl implements SysRoleService {
         // 先清空原有关系
         sysRoleMenuMapper.deleteByRoleId(tenantId, roleId, currentUserId);
 
-        // 再批量插入新关系
+        // 前端传来的是叶子节点，需要补充所有父节点
         List<Long> menuIds = dto.getMenuIds();
         if (menuIds != null && !menuIds.isEmpty()) {
-            sysRoleMenuMapper.insertBatch(tenantId, roleId, menuIds, currentUserId);
+            // 补充父节点
+            Set<Long> completeMenuIds = completeParentMenuIds(menuIds, tenantId);
+            // 保存完整的菜单ID列表
+            sysRoleMenuMapper.insertBatch(tenantId, roleId, new ArrayList<>(completeMenuIds), currentUserId);
         }
+    }
+
+    /**
+     * 补充所有父节点ID
+     * 前端只传递叶子节点，需要补充所有父节点来保证菜单树的完整性
+     */
+    private Set<Long> completeParentMenuIds(List<Long> leafMenuIds, Long tenantId) {
+        Set<Long> result = new HashSet<>(leafMenuIds);
+
+        // 查询所有菜单，构建ID到菜单的映射
+        List<SysMenu> allMenus = sysMenuMapper.selectList(tenantId);
+        Map<Long, SysMenu> menuMap = allMenus.stream()
+                .collect(Collectors.toMap(SysMenu::getId, m -> m));
+
+        // 对每个叶子节点，向上查找所有父节点
+        for (Long menuId : leafMenuIds) {
+            SysMenu menu = menuMap.get(menuId);
+            while (menu != null && menu.getParentId() != null && menu.getParentId() != 0L) {
+                result.add(menu.getParentId());
+                menu = menuMap.get(menu.getParentId());
+            }
+        }
+
+        return result;
     }
 }

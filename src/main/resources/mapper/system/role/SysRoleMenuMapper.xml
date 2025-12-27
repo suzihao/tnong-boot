@@ -6,7 +6,6 @@
     SELECT menu_id
     FROM sys_role_menu
     WHERE tenant_id = #{tenantId}
-      AND role_id = #{roleId}
   </select>
 
   <insert id="insertBatch">

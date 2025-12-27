@@ -29,29 +29,10 @@ public class SysMenuServiceImpl implements SysMenuService {
 
     @Override
     public List<SysMenuVO> tree(Long tenantId, Long userId) {
-        // 1. 查询用户的角色
-        List<Long> roleIds = sysUserRoleMapper.selectRoleIdsByUserId(tenantId, userId);
-        if (roleIds == null || roleIds.isEmpty()) {
-            return Collections.emptyList();
-        }
+        // 查询租户下的所有菜单（用于菜单管理和权限分配）
+        List<SysMenu> menus = sysMenuMapper.selectList(tenantId);
 
-        // 2. 通过角色查询菜单ID
-        Set<Long> menuIdSet = new HashSet<>();
-        for (Long roleId : roleIds) {
-            List<Long> menuIds = sysRoleMenuMapper.selectMenuIdsByRoleId(tenantId, roleId);
-            if (menuIds != null) {
-                menuIdSet.addAll(menuIds);
-            }
-        }
-        if (menuIdSet.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        // 3. 查询菜单详情
-        List<Long> menuIdList = new ArrayList<>(menuIdSet);
-        List<SysMenu> menus = sysMenuMapper.selectByIds(menuIdList, tenantId);
-
-        // 4. 构建树（包含所有类型：目录/菜单/按钮）
+        // 构建树（包含所有类型：目录/菜单/按钮）
         return buildTree(menus, 0L);
     }
 
