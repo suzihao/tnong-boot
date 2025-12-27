@@ -19,9 +19,9 @@ public class SysUser implements Serializable {
     private Long id;
 
     /**
-     * 业务用户ID（雪花算法生成，对外使用，唯一标识）
+     * 业务用户code（雪花算法生成，对外使用，唯一标识）
      */
-    private Long userId;
+    private Long userCode;
 
     /**
      * 租户ID

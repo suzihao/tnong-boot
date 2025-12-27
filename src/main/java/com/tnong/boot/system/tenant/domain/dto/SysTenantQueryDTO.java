@@ -15,7 +15,7 @@ public class SysTenantQueryDTO implements Serializable {
     /**
      * 业务租户ID
      */
-    private Long tenantId;
+    private Long id;
 
     /**
      * 租户名称（模糊查询）

@@ -65,7 +65,7 @@ public class SysUserServiceImpl implements SysUserService {
 
         SysUser user = new SysUser();
         BeanUtils.copyProperties(dto, user);
-        user.setUserId(SnowflakeIdGenerator.generateId());
+        user.setUserCode(SnowflakeIdGenerator.generateId());
         user.setPassword(encodedPassword);
         user.setTenantId(tenantId);
         user.setCreatedUser(currentUserId);
@@ -76,7 +76,7 @@ public class SysUserServiceImpl implements SysUserService {
         if (rows == 0) {
             throw new BusinessException("新增用户失败");
         }
-        return user.getUserId();
+        return user.getId();
     }
 
     @Override
@@ -90,7 +90,7 @@ public class SysUserServiceImpl implements SysUserService {
         }
 
         // 查询当前数据
-        SysUser dbUser = sysUserMapper.selectById(dto.getUserId(), tenantId);
+        SysUser dbUser = sysUserMapper.selectById(dto.getId(), tenantId);
         if (dbUser == null) {
             throw new BusinessException("用户不存在或已删除");
         }

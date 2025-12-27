@@ -11,24 +11,24 @@ USE `tnong_boot`;
 -- 1. 租户表
 -- ====================================
 CREATE TABLE `sys_tenant` (
-    `id`            BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '租户ID（物理主键）',
-    `tenant_id`     BIGINT          NOT NULL COMMENT '业务租户ID（雪花算法生成，对外使用，唯一标识）',
-    `name`          VARCHAR(128)    NOT NULL COMMENT '租户名称',
-    `contact_name`  VARCHAR(64)     NULL COMMENT '联系人姓名',
-    `contact_phone` VARCHAR(32)     NULL COMMENT '联系人电话',
-    `contact_email` VARCHAR(128)    NULL COMMENT '联系人邮箱',
-    `status`        TINYINT         NOT NULL DEFAULT 1 COMMENT '状态：1启用，0禁用',
-    `expire_time`   DATETIME        NULL COMMENT '到期时间，NULL表示无限期',
-    `remark`        VARCHAR(255)    NULL COMMENT '备注',
-    `delete_flag`   TINYINT         NOT NULL DEFAULT 0 COMMENT '删除标记：0未删除，1已删除',
-    `created_time`  DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-    `created_user`  BIGINT          NULL COMMENT '创建人ID',
-    `updated_time`  DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-    `updated_user`  BIGINT          NULL COMMENT '更新人ID',
-    `version`       INT             NOT NULL DEFAULT 0 COMMENT '乐观锁版本号',
-    PRIMARY KEY (`id`),
-    UNIQUE KEY `uk_tenant_id` (`tenant_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='租户表';
+                              `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT '租户ID（物理主键）',
+                              `tenant_code` bigint NOT NULL COMMENT '业务租户ID（雪花算法生成，对外使用，唯一标识）',
+                              `name` varchar(128) NOT NULL COMMENT '租户名称',
+                              `contact_name` varchar(64) DEFAULT NULL COMMENT '联系人姓名',
+                              `contact_phone` varchar(32) DEFAULT NULL COMMENT '联系人电话',
+                              `contact_email` varchar(128) DEFAULT NULL COMMENT '联系人邮箱',
+                              `status` tinyint NOT NULL DEFAULT '1' COMMENT '状态：1启用，0禁用',
+                              `expire_time` datetime DEFAULT NULL COMMENT '到期时间，NULL表示无限期',
+                              `remark` varchar(255) DEFAULT NULL COMMENT '备注',
+                              `delete_flag` tinyint NOT NULL DEFAULT '0' COMMENT '删除标记：0未删除，1已删除',
+                              `created_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+                              `created_user` bigint DEFAULT NULL COMMENT '创建人ID',
+                              `updated_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                              `updated_user` bigint DEFAULT NULL COMMENT '更新人ID',
+                              `version` int NOT NULL DEFAULT '0' COMMENT '乐观锁版本号',
+                              PRIMARY KEY (`id`),
+                              UNIQUE KEY `uk_tenant_code` (`tenant_code`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='租户表';
 
 -- ====================================
 -- 2. 部门表
@@ -61,31 +61,32 @@ CREATE TABLE `sys_dept` (
 -- 3. 用户表
 -- ====================================
 CREATE TABLE `sys_user` (
-    `id`              BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '用户ID',
-    `user_id` bigint NOT NULL COMMENT '业务用户ID（雪花算法生成，对外使用，唯一标识）',
-    `tenant_id`       BIGINT UNSIGNED NOT NULL COMMENT '租户ID',
-    `dept_id`         BIGINT UNSIGNED NULL COMMENT '主部门ID',
-    `username`        VARCHAR(64)     NOT NULL COMMENT '登录用户名',
-    `password`        VARCHAR(255)    NOT NULL COMMENT '登录密码（BCrypt）',
-    `nickname`        VARCHAR(64)     NULL COMMENT '昵称',
-    `avatar`          VARCHAR(255)    NULL COMMENT '头像地址',
-    `email`           VARCHAR(128)    NULL COMMENT '邮箱',
-    `mobile`          VARCHAR(32)     NULL COMMENT '手机号',
-    `status`          TINYINT         NOT NULL DEFAULT 1 COMMENT '状态：1启用，0禁用',
-    `delete_flag`     TINYINT         NOT NULL DEFAULT 0 COMMENT '删除标记：0未删除，1已删除',
-    `last_login_ip`   VARCHAR(64)     NULL COMMENT '最后登录IP',
-    `last_login_time` DATETIME        NULL COMMENT '最后登录时间',
-    `remark`          VARCHAR(255)    NULL COMMENT '备注',
-    `created_time`    DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-    `created_user`    BIGINT          NULL COMMENT '创建人ID',
-    `updated_time`    DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-    `updated_user`    BIGINT          NULL COMMENT '更新人ID',
-    `version`         INT             NOT NULL DEFAULT 0 COMMENT '乐观锁版本号',
-    PRIMARY KEY (`id`),
-    UNIQUE KEY `uk_tenant_username` (`tenant_id`, `username`),
-    KEY `idx_user_tenant` (`tenant_id`),
-    KEY `idx_user_dept` (`dept_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户表';
+                            `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT '用户ID',
+                            `user_code` bigint NOT NULL COMMENT '业务用户ID（雪花算法生成，对外使用，唯一标识）',
+                            `tenant_id` bigint unsigned NOT NULL COMMENT '租户ID',
+                            `dept_id` bigint unsigned DEFAULT NULL COMMENT '主部门ID',
+                            `username` varchar(64) NOT NULL COMMENT '登录用户名',
+                            `password` varchar(255) NOT NULL COMMENT '登录密码（BCrypt）',
+                            `nickname` varchar(64) DEFAULT NULL COMMENT '昵称',
+                            `avatar` varchar(255) DEFAULT NULL COMMENT '头像地址',
+                            `email` varchar(128) DEFAULT NULL COMMENT '邮箱',
+                            `mobile` varchar(32) DEFAULT NULL COMMENT '手机号',
+                            `status` tinyint NOT NULL DEFAULT '1' COMMENT '状态：1启用，0禁用',
+                            `delete_flag` tinyint NOT NULL DEFAULT '0' COMMENT '删除标记：0未删除，1已删除',
+                            `last_login_ip` varchar(64) DEFAULT NULL COMMENT '最后登录IP',
+                            `last_login_time` datetime DEFAULT NULL COMMENT '最后登录时间',
+                            `remark` varchar(255) DEFAULT NULL COMMENT '备注',
+                            `created_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+                            `created_user` bigint DEFAULT NULL COMMENT '创建人ID',
+                            `updated_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                            `updated_user` bigint DEFAULT NULL COMMENT '更新人ID',
+                            `version` int NOT NULL DEFAULT '0' COMMENT '乐观锁版本号',
+                            PRIMARY KEY (`id`),
+                            UNIQUE KEY `uk_tenant_username` (`tenant_id`,`username`),
+                            UNIQUE KEY `uk_user_id` (`user_code`),
+                            KEY `idx_user_tenant` (`tenant_id`),
+                            KEY `idx_user_dept` (`dept_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='用户表';
 
 
 CREATE TABLE sys_user_third_account (

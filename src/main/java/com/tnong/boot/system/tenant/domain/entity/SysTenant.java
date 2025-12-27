@@ -21,7 +21,7 @@ public class SysTenant implements Serializable {
     /**
      * 业务租户ID（雪花算法生成，对外使用，唯一标识）
      */
-    private Long tenantId;
+    private Long tenantCode;
 
     /**
      * 租户名称

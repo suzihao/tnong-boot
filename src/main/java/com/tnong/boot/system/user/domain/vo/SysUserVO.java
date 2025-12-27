@@ -14,9 +14,9 @@ public class SysUserVO implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 用户ID（userId）
+     * 用户编码
      */
-    private Long userId;
+    private Long userCode;
     
     /**
      * 用户主键ID

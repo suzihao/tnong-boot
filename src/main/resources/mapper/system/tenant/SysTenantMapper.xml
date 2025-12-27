@@ -6,7 +6,7 @@
 
     <resultMap id="BaseResultMap" type="com.tnong.boot.system.tenant.domain.entity.SysTenant">
         <id property="id" column="id"/>
-        <result property="tenantId" column="tenant_id"/>
+        <result property="tenantCode" column="tenant_code"/>
         <result property="name" column="name"/>
         <result property="contactName" column="contact_name"/>
         <result property="contactPhone" column="contact_phone"/>
@@ -23,7 +23,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id, tenant_id, name, contact_name, contact_phone, contact_email,
+        id, tenant_code, name, contact_name, contact_phone, contact_email,
         status, expire_time, remark, delete_flag,
         created_time, created_user, updated_time, updated_user, version
     </sql>
@@ -32,8 +32,8 @@
         <where>
             AND delete_flag = 0
             <if test="query != null">
-                <if test="query.tenantId != null">
-                    AND tenant_id = #{query.tenantId}
+                <if test="query.id != null">
+                    AND id = #{id}
                 </if>
                 <if test="query.name != null and query.name != ''">
                     AND name LIKE CONCAT('%', #{query.name}, '%')
@@ -57,7 +57,7 @@
         SELECT
         <include refid="Base_Column_List"/>
         FROM sys_tenant
-        WHERE tenant_id = #{tenantId}
+        WHERE id = #{id}
         AND delete_flag = 0
     </select>
 

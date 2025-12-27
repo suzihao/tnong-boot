@@ -142,12 +142,12 @@ public class AuthServiceImpl implements AuthService {
             if (user == null) {
                 user = createUserFromWecom(wecomUser, tenantId);
                 log.info("企业微信登录：自动创建用户 userId={}, wecomUserId={}", 
-                        user.getUserId(), wecomUser.getUserId());
+                        user.getId(), wecomUser.getUserId());
             }
 
             // 7. 创建绑定关系
             SysUserThirdAccount account = new SysUserThirdAccount();
-            account.setUserId(user.getUserId());
+            account.setUserId(user.getId());
             account.setType("wecom");
             account.setThirdUserId(wecomUser.getUserId());
             account.setThirdUnionId(wecomUser.getUnionId());
@@ -157,23 +157,23 @@ public class AuthServiceImpl implements AuthService {
 
         // 8. 检查用户状态
         if (!CommonConstant.STATUS_ENABLE.equals(user.getStatus())) {
-            recordLoginLog(user.getUserId(), tenantId, user.getUsername(), 0, "用户已被禁用", request);
+            recordLoginLog(user.getId(), tenantId, user.getUsername(), 0, "用户已被禁用", request);
             throw new BusinessException("用户已被禁用");
         }
 
         // 9. 生成 Token
-        String token = JwtUtil.generateToken(user.getUserId(), user.getUsername(), tenantId);
+        String token = JwtUtil.generateToken(user.getId(), user.getUsername(), tenantId);
 
         // 10. 更新最后登录信息
         updateLastLogin(user, request);
 
         // 11. 记录登录成功日志（此处暂用同一日志类型）
-        recordLoginLog(user.getUserId(), tenantId, user.getUsername(), 1, "企业微信登录成功", request);
+        recordLoginLog(user.getId(), tenantId, user.getUsername(), 1, "企业微信登录成功", request);
 
         // 12. 构造返回结果
         LoginVO loginVO = new LoginVO();
         loginVO.setToken(token);
-        loginVO.setUserId(user.getUserId());
+        loginVO.setUserId(user.getId());
         loginVO.setTenantId(tenantId);
         loginVO.setUsername(user.getUsername());
         loginVO.setNickname(user.getNickname());
@@ -301,7 +301,7 @@ public class AuthServiceImpl implements AuthService {
         SysUser user = new SysUser();
         
         // 生成业务用户ID
-        user.setUserId(SnowflakeIdGenerator.generateId());
+        user.setUserCode(SnowflakeIdGenerator.generateId());
         user.setTenantId(tenantId);
         
         // 基本信息：使用企业微信userId作为用户名
@@ -338,7 +338,7 @@ public class AuthServiceImpl implements AuthService {
             tenantId = 1L;
         }
         
-        SysTenant tenant = sysTenantMapper.selectByTenantId(tenantId);
+        SysTenant tenant = sysTenantMapper.selectById(tenantId);
         if (tenant == null) {
             throw new BusinessException("租户不存在");
         }

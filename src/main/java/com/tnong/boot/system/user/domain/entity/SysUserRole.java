@@ -15,9 +15,6 @@ public class SysUserRole implements Serializable {
 
     private Long id;
     private Long tenantId;
-    /**
-     * 用户ID（这里存业务 userId）
-     */
     private Long userId;
     private Long roleId;
     private Integer deleteFlag;

@@ -1,6 +1,5 @@
 package com.tnong.boot.system.user.mapper;
 
-import com.tnong.boot.system.user.domain.entity.SysUserRole;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
