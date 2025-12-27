@@ -2,7 +2,6 @@ package com.tnong.boot.system.tenant.mapper;
 
 import com.tnong.boot.system.tenant.domain.dto.SysTenantQueryDTO;
 import com.tnong.boot.system.tenant.domain.entity.SysTenant;
-import com.tnong.boot.system.tenant.domain.vo.SysTenantVO;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -25,7 +24,7 @@ public interface SysTenantMapper {
     /**
      * 分页查询租户列表
      */
-    List<SysTenantVO> selectPageList(@Param("query") SysTenantQueryDTO query);
+    List<SysTenant> selectPageList(@Param("query") SysTenantQueryDTO query);
 
     /**
      * 查询总数

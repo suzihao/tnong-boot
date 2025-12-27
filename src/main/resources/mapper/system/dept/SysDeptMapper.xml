@@ -1,43 +1,198 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.tnong.boot.system.dept.mapper.SysDeptMapper">
 
-    <select id="selectById" resultType="com.tnong.boot.system.dept.domain.entity.SysDept">
-        SELECT * FROM sys_dept WHERE id = #{id} AND tenant_id = #{tenantId} AND delete_flag = 0
+    <!-- 结果映射 -->
+    <resultMap id="BaseResultMap" type="com.tnong.boot.system.dept.domain.entity.SysDept">
+        <id property="id" column="id"/>
+        <result property="tenantId" column="tenant_id"/>
+        <result property="parentId" column="parent_id"/>
+        <result property="name" column="name"/>
+        <result property="code" column="code"/>
+        <result property="sort" column="sort"/>
+        <result property="status" column="status"/>
+        <result property="leaderUserId" column="leader_user_id"/>
+        <result property="phone" column="phone"/>
+        <result property="email" column="email"/>
+        <result property="remark" column="remark"/>
+        <result property="deleteFlag" column="delete_flag"/>
+        <result property="createdTime" column="created_time"/>
+        <result property="createdUser" column="created_user"/>
+        <result property="updatedTime" column="updated_time"/>
+        <result property="updatedUser" column="updated_user"/>
+        <result property="version" column="version"/>
+    </resultMap>
+
+    <!-- 基础字段 -->
+    <sql id="Base_Column_List">
+        id, tenant_id, parent_id, name, code, sort, status, leader_user_id, phone, email,
+        remark, delete_flag, created_time, created_user, updated_time, updated_user, version
+    </sql>
+
+    <!-- VO字段（关联负责人姓名） -->
+    <sql id="VO_Column_List">
+        d.id, d.tenant_id, d.parent_id, d.name, d.code, d.sort, d.status,
+        d.leader_user_id, u.nickname as leader_user_name,
+        d.phone, d.email, d.remark,
+        d.created_time, d.updated_time, d.version
+    </sql>
+
+    <!-- 树形结构字段 -->
+    <sql id="Tree_Column_List">
+        d.id, d.parent_id, d.name, d.code, d.sort, d.status,
+        d.leader_user_id, u.nickname as leader_user_name
+    </sql>
+
+    <!-- 通用查询条件 -->
+    <sql id="Common_Where_Clause">
+        <where>
+            AND d.delete_flag = 0
+            AND d.tenant_id = #{tenantId}
+            <if test="query != null">
+                <if test="query.name != null and query.name != ''">
+                    AND d.name LIKE CONCAT('%', #{query.name}, '%')
+                </if>
+                <if test="query.code != null and query.code != ''">
+                    AND d.code = #{query.code}
+                </if>
+                <if test="query.status != null">
+                    AND d.status = #{query.status}
+                </if>
+                <if test="query.parentId != null">
+                    AND d.parent_id = #{query.parentId}
+                </if>
+            </if>
+        </where>
+    </sql>
+
+    <!-- 根据ID查询 -->
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM sys_dept
+        WHERE id = #{id}
+        AND tenant_id = #{tenantId}
+        AND delete_flag = 0
     </select>
 
-    <select id="selectList" resultType="com.tnong.boot.system.dept.domain.entity.SysDept">
-        SELECT * FROM sys_dept WHERE tenant_id = #{tenantId} AND delete_flag = 0 ORDER BY sort ASC, created_time ASC
+    <!-- 根据部门编码查询 -->
+    <select id="selectByCode" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM sys_dept
+        WHERE code = #{code}
+        AND tenant_id = #{tenantId}
+        AND delete_flag = 0
     </select>
 
-    <select id="selectByParentId" resultType="com.tnong.boot.system.dept.domain.entity.SysDept">
-        SELECT * FROM sys_dept WHERE parent_id = #{parentId} AND tenant_id = #{tenantId} AND delete_flag = 0 ORDER BY sort ASC
+    <!-- 查询部门列表（带负责人姓名） -->
+    <select id="selectList" resultType="com.tnong.boot.system.dept.domain.vo.SysDeptVO">
+        SELECT
+        <include refid="VO_Column_List"/>
+        FROM sys_dept d
+        LEFT JOIN sys_user u ON d.leader_user_id = u.id AND u.delete_flag = 0
+        <include refid="Common_Where_Clause"/>
+        ORDER BY d.sort ASC, d.created_time ASC
     </select>
 
-    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO sys_dept (tenant_id, parent_id, name, code, sort, status, leader_user_id, phone, email, remark, delete_flag, created_time, created_user, updated_time, updated_user, version)
-        VALUES (#{tenantId}, #{parentId}, #{name}, #{code}, #{sort}, #{status}, #{leaderUserId}, #{phone}, #{email}, #{remark}, 0, NOW(), #{createdUser}, NOW(), #{updatedUser}, 0)
+    <!-- 查询树形结构（所有部门） -->
+    <select id="selectTreeList" resultType="com.tnong.boot.system.dept.domain.vo.SysDeptTreeVO">
+        SELECT
+        <include refid="Tree_Column_List"/>
+        FROM sys_dept d
+        LEFT JOIN sys_user u ON d.leader_user_id = u.id AND u.delete_flag = 0
+        WHERE d.tenant_id = #{tenantId}
+        AND d.delete_flag = 0
+        ORDER BY d.sort ASC, d.created_time ASC
+    </select>
+
+    <!-- 查询简单部门列表（用于下拉框） -->
+    <select id="selectSimpleList" resultType="com.tnong.boot.system.dept.domain.vo.SysDeptSimpleVO">
+        SELECT id, parent_id, name, code
+        FROM sys_dept
+        WHERE tenant_id = #{tenantId}
+        AND delete_flag = 0
+        AND status = 1
+        ORDER BY sort ASC, created_time ASC
+    </select>
+
+    <!-- 查询子部门ID列表（递归） -->
+    <select id="selectChildrenIds" resultType="long">
+        WITH RECURSIVE dept_tree AS (
+            SELECT id
+            FROM sys_dept
+            WHERE parent_id = #{parentId}
+            AND tenant_id = #{tenantId}
+            AND delete_flag = 0
+
+            UNION ALL
+
+            SELECT d.id
+            FROM sys_dept d
+            INNER JOIN dept_tree dt ON d.parent_id = dt.id
+            WHERE d.tenant_id = #{tenantId}
+            AND d.delete_flag = 0
+        )
+        SELECT id FROM dept_tree
+    </select>
+
+    <!-- 查询部门用户数量 -->
+    <select id="countUsersByDeptId" resultType="long">
+        SELECT COUNT(*)
+        FROM sys_user
+        WHERE dept_id = #{deptId}
+        AND tenant_id = #{tenantId}
+        AND delete_flag = 0
+    </select>
+
+    <!-- 插入部门 -->
+    <insert id="insert" parameterType="com.tnong.boot.system.dept.domain.entity.SysDept"
+            useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO sys_dept (
+            tenant_id, parent_id, name, code, sort, status, leader_user_id, phone, email,
+            remark, delete_flag, created_time, created_user, updated_time, updated_user, version
+        ) VALUES (
+            #{tenantId}, #{parentId}, #{name}, #{code}, #{sort}, #{status}, #{leaderUserId}, #{phone}, #{email},
+            #{remark}, 0, NOW(), #{createdUser}, NOW(), #{updatedUser}, 0
+        )
     </insert>
 
+    <!-- 更新部门（带乐观锁） -->
     <update id="updateByIdWithVersion">
         UPDATE sys_dept
         <set>
-            <if test="name != null">name = #{name},</if>
             <if test="parentId != null">parent_id = #{parentId},</if>
+            <if test="name != null">name = #{name},</if>
+            <if test="code != null">code = #{code},</if>
             <if test="sort != null">sort = #{sort},</if>
             <if test="status != null">status = #{status},</if>
             <if test="leaderUserId != null">leader_user_id = #{leaderUserId},</if>
             <if test="phone != null">phone = #{phone},</if>
             <if test="email != null">email = #{email},</if>
             <if test="remark != null">remark = #{remark},</if>
-            updated_time = NOW(), updated_user = #{updatedUser}, version = version + 1
+            updated_time = NOW(),
+            updated_user = #{updatedUser},
+            version = version + 1
         </set>
-        WHERE id = #{id} AND tenant_id = #{tenantId} AND version = #{version} AND delete_flag = 0
+        WHERE id = #{id}
+        AND tenant_id = #{tenantId}
+        AND version = #{version}
+        AND delete_flag = 0
     </update>
 
+    <!-- 逻辑删除部门（带乐观锁） -->
     <update id="deleteById">
-        UPDATE sys_dept SET delete_flag = 1, updated_time = NOW(), updated_user = #{updatedUser}, version = version + 1
-        WHERE id = #{id} AND tenant_id = #{tenantId} AND version = #{version} AND delete_flag = 0
+        UPDATE sys_dept
+        SET delete_flag = 1,
+            updated_time = NOW(),
+            updated_user = #{updatedUser},
+            version = version + 1
+        WHERE id = #{id}
+        AND tenant_id = #{tenantId}
+        AND version = #{version}
+        AND delete_flag = 0
     </update>
 
 </mapper>

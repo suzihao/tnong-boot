@@ -29,8 +29,18 @@ public class SysTenantServiceImpl implements SysTenantService {
 
     @Override
     public PageResult<SysTenantVO> pageList(SysTenantQueryDTO query) {
-        List<SysTenantVO> records = sysTenantMapper.selectPageList(query);
+        List<SysTenant> entities = sysTenantMapper.selectPageList(query);
         Long total = sysTenantMapper.selectCount(query);
+        
+        // Entity 转 VO
+        List<SysTenantVO> records = entities.stream()
+                .map(entity -> {
+                    SysTenantVO vo = new SysTenantVO();
+                    BeanUtils.copyProperties(entity, vo);
+                    return vo;
+                })
+                .toList();
+        
         return PageResult.of(total, records, query.getCurrent(), query.getSize());
     }
 
