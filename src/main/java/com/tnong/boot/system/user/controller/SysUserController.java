@@ -1,5 +1,7 @@
 package com.tnong.boot.system.user.controller;
 
+import com.tnong.boot.common.annotation.Log;
+import com.tnong.boot.common.constant.BusinessType;
 import com.tnong.boot.common.web.PageResult;
 import com.tnong.boot.common.web.Result;
 import com.tnong.boot.framework.security.UserContext;
@@ -43,6 +45,7 @@ public class SysUserController {
     /**
      * 新增用户
      */
+    @Log(module = "用户管理", businessType = BusinessType.INSERT)
     @PostMapping
     public Result<Long> save(@RequestBody SysUserSaveDTO dto) {
         Long tenantId = UserContext.getTenantId();
@@ -54,6 +57,7 @@ public class SysUserController {
     /**
      * 更新用户
      */
+    @Log(module = "用户管理", businessType = BusinessType.UPDATE)
     @PutMapping
     public Result<Void> update(@RequestBody SysUserSaveDTO dto) {
         Long tenantId = UserContext.getTenantId();

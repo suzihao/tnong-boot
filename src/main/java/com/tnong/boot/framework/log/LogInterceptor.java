@@ -12,6 +12,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 
+import java.util.Map;
+
 /**
  * 操作日志拦截器（基于 Spring MVC HandlerInterceptor）
  */
@@ -35,8 +37,8 @@ public class LogInterceptor implements HandlerInterceptor {
     }
 
     @Override
-    public void afterCompletion(HttpServletRequest request, 
-                               jakarta.servlet.http.HttpServletResponse response, 
+    public void afterCompletion(HttpServletRequest request,
+                               HttpServletResponse response,
                                Object handler, Exception ex) throws Exception {
         try {
             // 只处理带有 @Log 注解的方法
@@ -114,7 +116,7 @@ public class LogInterceptor implements HandlerInterceptor {
      */
     private String getRequestParams(HttpServletRequest request) {
         try {
-            java.util.Map<String, String[]> parameterMap = request.getParameterMap();
+            Map<String, String[]> parameterMap = request.getParameterMap();
             if (parameterMap.isEmpty()) {
                 return "";
             }
