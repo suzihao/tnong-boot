@@ -208,7 +208,7 @@ public class AuthServiceImpl implements AuthService {
             JsonNode tokenNode = mapper.readTree(tokenBody);
             int errcode = tokenNode.path("errcode").asInt(0);
             if (errcode != 0) {
-                String errmsg = tokenNode.path("errmsg").asText(null);
+                String errmsg = tokenNode.path("errmsg").stringValue(null);
                 throw new BusinessException("获取企业微信access_token失败:" + errmsg);
             }
 
@@ -227,11 +227,11 @@ public class AuthServiceImpl implements AuthService {
             JsonNode userNode = mapper.readTree(userResp.body());
             int userErr = userNode.path("errcode").asInt(0);
             if (userErr != 0) {
-                String errmsg = userNode.path("errmsg").asText(null);
+                String errmsg = userNode.path("errmsg").stringValue(null);
                 throw new BusinessException("获取企业微信用户ID失败:" + errmsg);
             }
 
-            String userId = userNode.path("userid").asText(null);
+            String userId = userNode.path("userid").stringValue(null);
             if (!StringUtils.hasText(userId)) {
                 throw new BusinessException("企业微信返回的userid为空");
             }
