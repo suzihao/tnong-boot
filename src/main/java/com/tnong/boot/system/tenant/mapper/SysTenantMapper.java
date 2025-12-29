@@ -1,10 +1,11 @@
 package com.tnong.boot.system.tenant.mapper;
 
-import com.tnong.boot.system.tenant.domain.dto.SysTenantQueryDTO;
-import com.tnong.boot.system.tenant.domain.entity.SysTenant;
+import java.util.List;
+
 import org.apache.ibatis.annotations.Param;
 
-import java.util.List;
+import com.tnong.boot.system.tenant.domain.dto.SysTenantQueryDTO;
+import com.tnong.boot.system.tenant.domain.entity.SysTenant;
 
 /**
  * 租户 Mapper 接口

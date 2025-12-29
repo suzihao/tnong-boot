@@ -1,10 +1,11 @@
 package com.tnong.boot.system.log.mapper;
 
-import com.tnong.boot.system.log.domain.dto.SysOperLogQueryDTO;
-import com.tnong.boot.system.log.domain.entity.SysOperLog;
+import java.util.List;
+
 import org.apache.ibatis.annotations.Param;
 
-import java.util.List;
+import com.tnong.boot.system.log.domain.dto.SysOperLogQueryDTO;
+import com.tnong.boot.system.log.domain.entity.SysOperLog;
 
 /**
  * 操作日志 Mapper 接口

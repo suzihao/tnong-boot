@@ -1,9 +1,9 @@
 package com.tnong.boot.system.log.domain.dto;
 
-import lombok.Data;
-
 import java.io.Serializable;
 import java.time.LocalDateTime;
+
+import lombok.Data;
 
 /**
  * 操作日志查询参数
