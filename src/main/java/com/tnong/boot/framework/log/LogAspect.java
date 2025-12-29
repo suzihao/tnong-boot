@@ -1,55 +1,75 @@
 package com.tnong.boot.framework.log;
 
 import com.tnong.boot.common.annotation.Log;
+import com.tnong.boot.framework.security.LoginUser;
 import com.tnong.boot.framework.security.UserContext;
 import com.tnong.boot.system.log.domain.entity.SysOperLog;
 import com.tnong.boot.system.log.service.SysOperLogService;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.annotation.AfterReturning;
+import org.aspectj.lang.annotation.AfterThrowing;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
 import org.springframework.stereotype.Component;
-import org.springframework.web.method.HandlerMethod;
-import org.springframework.web.servlet.HandlerInterceptor;
-
-import java.util.Map;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+import tools.jackson.databind.ObjectMapper;
 
 /**
- * 操作日志拦截器（基于 Spring MVC HandlerInterceptor）
+ * 操作日志 AOP 切面
  */
 @Slf4j
+@Aspect
 @Component
 @RequiredArgsConstructor
-public class LogInterceptor implements HandlerInterceptor {
+public class LogAspect {
 
     private final SysOperLogService sysOperLogService;
+    private final ObjectMapper objectMapper;
 
     /**
      * 线程本地变量，存储开始时间
      */
     private final ThreadLocal<Long> startTimeThreadLocal = new ThreadLocal<>();
 
-
-    @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+    /**
+     * 前置通知，记录开始时间
+     */
+    @Before("@annotation(logAnnotation)")
+    public void doBefore(JoinPoint joinPoint, Log logAnnotation) {
         startTimeThreadLocal.set(System.currentTimeMillis());
-        return true;
     }
 
-    @Override
-    public void afterCompletion(HttpServletRequest request,
-                               HttpServletResponse response,
-                               Object handler, Exception ex) throws Exception {
-        try {
-            // 只处理带有 @Log 注解的方法
-            if (!(handler instanceof HandlerMethod handlerMethod)) {
-                return;
-            }
+    /**
+     * 正常返回后通知
+     */
+    @AfterReturning(pointcut = "@annotation(logAnnotation)", returning = "result")
+    public void doAfterReturning(JoinPoint joinPoint, Log logAnnotation, Object result) {
+        handleLog(joinPoint, logAnnotation, null, result);
+    }
 
-            Log logAnnotation = handlerMethod.getMethodAnnotation(Log.class);
-            if (logAnnotation == null) {
+    /**
+     * 异常后通知
+     */
+    @AfterThrowing(pointcut = "@annotation(logAnnotation)", throwing = "e")
+    public void doAfterThrowing(JoinPoint joinPoint, Log logAnnotation, Exception e) {
+        handleLog(joinPoint, logAnnotation, e, null);
+    }
+
+    /**
+     * 处理日志
+     */
+    private void handleLog(JoinPoint joinPoint, Log logAnnotation, Exception e, Object result) {
+        try {
+            // 获取请求信息
+            ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+            if (attributes == null) {
                 return;
             }
+            HttpServletRequest request = attributes.getRequest();
 
             // 构建日志对象
             SysOperLog operLog = new SysOperLog();
@@ -64,8 +84,8 @@ public class LogInterceptor implements HandlerInterceptor {
                     operLog.setTenantId(tenantId);
                     operLog.setUsername(username);
                 }
-            } catch (Exception e) {
-                log.warn("获取登录用户信息失败", e);
+            } catch (Exception ex) {
+                log.warn("获取登录用户信息失败", ex);
             }
 
             // 设置模块和业务类型
@@ -79,19 +99,24 @@ public class LogInterceptor implements HandlerInterceptor {
             operLog.setUserAgent(request.getHeader("User-Agent"));
 
             // 设置方法名
-            String className = handlerMethod.getBeanType().getName();
-            String methodName = handlerMethod.getMethod().getName();
+            String className = joinPoint.getTarget().getClass().getName();
+            String methodName = joinPoint.getSignature().getName();
             operLog.setMethod(className + "." + methodName);
 
             // 设置请求参数
             if (logAnnotation.saveRequestData()) {
-                operLog.setRequestParams(getRequestParams(request));
+                operLog.setRequestParams(getRequestParams(joinPoint));
+            }
+
+            // 设置响应结果
+            if (logAnnotation.saveResponseData() && result != null) {
+                operLog.setResponseData(truncateString(toJsonString(result), 2000));
             }
 
             // 设置操作状态和错误信息
-            if (ex != null) {
+            if (e != null) {
                 operLog.setStatus(0);
-                operLog.setErrorMsg(truncateString(ex.getMessage(), 2000));
+                operLog.setErrorMsg(truncateString(e.getMessage(), 2000));
             } else {
                 operLog.setStatus(1);
             }
@@ -106,24 +131,35 @@ public class LogInterceptor implements HandlerInterceptor {
             // 异步保存日志
             sysOperLogService.save(operLog);
 
-        } catch (Exception e) {
-            log.error("记录操作日志异常", e);
+        } catch (Exception ex) {
+            log.error("记录操作日志异常", ex);
         }
     }
 
     /**
      * 获取请求参数
      */
-    private String getRequestParams(HttpServletRequest request) {
+    private String getRequestParams(JoinPoint joinPoint) {
         try {
-            Map<String, String[]> parameterMap = request.getParameterMap();
-            if (parameterMap.isEmpty()) {
+            Object[] args = joinPoint.getArgs();
+            if (args == null || args.length == 0) {
                 return "";
             }
-            return truncateString(parameterMap.toString(), 2000);
+            return truncateString(toJsonString(args), 2000);
         } catch (Exception e) {
             log.warn("获取请求参数失败", e);
             return "";
+        }
+    }
+
+    /**
+     * 对象转 JSON 字符串
+     */
+    private String toJsonString(Object obj) {
+        try {
+            return objectMapper.writeValueAsString(obj);
+        } catch (Exception e) {
+            return obj.toString();
         }
     }
 
