@@ -249,16 +249,16 @@ public class AuthServiceImpl implements AuthService {
             JsonNode detailNode = mapper.readTree(detailResp.body());
             int detailErr = detailNode.path("errcode").asInt(0);
             if (detailErr != 0) {
-                String errmsg = detailNode.path("errmsg").asText(null);
+                String errmsg = detailNode.path("errmsg").stringValue(null);
                 throw new BusinessException("获取企业微信用户详情失败:" + errmsg);
             }
 
             WecomUserInfo info = new WecomUserInfo();
             info.setUserId(userId);
-            info.setName(detailNode.path("name").asText(null));
-            info.setEmail(detailNode.path("email").asText(null));
-            info.setUnionId(detailNode.path("unionid").asText(null));
-            info.setPosition(detailNode.path("position").asText(null));
+            info.setName(detailNode.path("name").stringValue(null));
+            info.setEmail(detailNode.path("email").stringValue(null));
+            info.setUnionId(detailNode.path("unionid").stringValue(null));
+            info.setPosition(detailNode.path("position").stringValue(null));
             
             // 从 extattr.attrs 中提取工号和手机号
             JsonNode extattr = detailNode.path("extattr");
@@ -266,8 +266,8 @@ public class AuthServiceImpl implements AuthService {
                 JsonNode attrs = extattr.get("attrs");
                 if (attrs.isArray()) {
                     for (JsonNode attr : attrs) {
-                        String attrName = attr.path("name").asText("");
-                        String attrValue = attr.path("value").asText(null);
+                        String attrName = attr.path("name").stringValue("");
+                        String attrValue = attr.path("value").stringValue(null);
                         
                         if ("工号".equals(attrName) && attrValue != null) {
                             info.setEmployeeId(attrValue);
