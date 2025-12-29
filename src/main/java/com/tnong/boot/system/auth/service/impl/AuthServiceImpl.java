@@ -2,6 +2,7 @@ package com.tnong.boot.system.auth.service.impl;
 
 import com.tnong.boot.common.constant.CommonConstant;
 import com.tnong.boot.common.exception.BusinessException;
+import com.tnong.boot.common.util.HttpRequestUtil;
 import com.tnong.boot.common.util.JwtUtil;
 import com.tnong.boot.common.util.PasswordUtil;
 import com.tnong.boot.common.util.SnowflakeIdGenerator;
@@ -27,6 +28,7 @@ import org.springframework.util.StringUtils;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 
+import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -43,6 +45,8 @@ public class AuthServiceImpl implements AuthService {
     private final SysTenantMapper sysTenantMapper;
     private final SysLoginLogMapper sysLoginLogMapper;
     private final SysUserThirdAccountMapper sysUserThirdAccountMapper;
+
+    private final HttpClient client;
 
     @Value("${wecom.corp-id:}")
     private String wecomCorpId;
@@ -194,12 +198,8 @@ public class AuthServiceImpl implements AuthService {
         String tokenUrl = "https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid="
                 + wecomCorpId + "&corpsecret=" + wecomSecret;
 
-        HttpClient client = HttpClient.newHttpClient();
         try {
-           HttpRequest tokenRequest = HttpRequest.newBuilder()
-                    .uri(java.net.URI.create(tokenUrl))
-                    .GET()
-                    .build();
+           HttpRequest tokenRequest = HttpRequestUtil.getHttpRequest(tokenUrl);
 
             HttpResponse<String> tokenResponse = client.send(tokenRequest, HttpResponse.BodyHandlers.ofString());
             String tokenBody = tokenResponse.body();
@@ -218,10 +218,7 @@ public class AuthServiceImpl implements AuthService {
             String userInfoUrl = "https://qyapi.weixin.qq.com/cgi-bin/auth/getuserinfo?access_token="
                     + accessToken + "&code=" + code;
 
-            HttpRequest userReq = HttpRequest.newBuilder()
-                    .uri(java.net.URI.create(userInfoUrl))
-                    .GET()
-                    .build();
+            HttpRequest userReq = HttpRequestUtil.getHttpRequest(userInfoUrl);
 
             HttpResponse<String> userResp = client.send(userReq, HttpResponse.BodyHandlers.ofString());
             JsonNode userNode = mapper.readTree(userResp.body());
@@ -240,10 +237,7 @@ public class AuthServiceImpl implements AuthService {
             String detailUrl = "https://qyapi.weixin.qq.com/cgi-bin/user/get?access_token="
                     + accessToken + "&userid=" + userId;
 
-            HttpRequest detailReq = HttpRequest.newBuilder()
-                    .uri(java.net.URI.create(detailUrl))
-                    .GET()
-                    .build();
+            HttpRequest detailReq = HttpRequestUtil.getHttpRequest(detailUrl);
 
             HttpResponse<String> detailResp = client.send(detailReq, HttpResponse.BodyHandlers.ofString());
             JsonNode detailNode = mapper.readTree(detailResp.body());
