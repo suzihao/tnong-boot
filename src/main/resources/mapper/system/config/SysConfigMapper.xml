@@ -14,6 +14,42 @@
         SELECT * FROM sys_config WHERE tenant_id = #{tenantId} AND delete_flag = 0 ORDER BY created_time DESC
     </select>
 
+    <select id="selectPageList" resultType="com.tnong.boot.system.config.domain.entity.SysConfig">
+        SELECT * FROM sys_config
+        WHERE tenant_id = #{tenantId} AND delete_flag = 0
+        <if test="query.configKey != null and query.configKey != ''">
+            AND config_key LIKE CONCAT('%', #{query.configKey}, '%')
+        </if>
+        <if test="query.configName != null and query.configName != ''">
+            AND config_name LIKE CONCAT('%', #{query.configName}, '%')
+        </if>
+        <if test="query.configType != null">
+            AND config_type = #{query.configType}
+        </if>
+        <if test="query.status != null">
+            AND status = #{query.status}
+        </if>
+        ORDER BY created_time DESC
+        LIMIT #{query.offset}, #{query.size}
+    </select>
+
+    <select id="selectCount" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM sys_config
+        WHERE tenant_id = #{tenantId} AND delete_flag = 0
+        <if test="query.configKey != null and query.configKey != ''">
+            AND config_key LIKE CONCAT('%', #{query.configKey}, '%')
+        </if>
+        <if test="query.configName != null and query.configName != ''">
+            AND config_name LIKE CONCAT('%', #{query.configName}, '%')
+        </if>
+        <if test="query.configType != null">
+            AND config_type = #{query.configType}
+        </if>
+        <if test="query.status != null">
+            AND status = #{query.status}
+        </if>
+    </select>
+
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO sys_config (tenant_id, config_key, config_name, config_value, config_type, is_system, status, remark, delete_flag, created_time, created_user, updated_time, updated_user, version)
         VALUES (#{tenantId}, #{configKey}, #{configName}, #{configValue}, #{configType}, #{isSystem}, #{status}, #{remark}, 0, NOW(), #{createdUser}, NOW(), #{updatedUser}, 0)
