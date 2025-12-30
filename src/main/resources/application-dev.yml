@@ -1,0 +1,8 @@
+# application-dev.properties
+# 开启调试模式（会输出更多日志信息）
+debug: true
+
+# 重置日志格式为Spring Boot默认格式
+logging:
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n"
