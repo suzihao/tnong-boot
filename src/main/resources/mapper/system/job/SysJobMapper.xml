@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tnong.boot.system.job.mapper.SysJobMapper">
+
+    <select id="selectById" resultType="com.tnong.boot.system.job.domain.entity.SysJob">
+        SELECT * FROM sys_job WHERE id = #{id} AND tenant_id = #{tenantId} AND delete_flag = 0
+    </select>
+
+    <select id="selectPageList" resultType="com.tnong.boot.system.job.domain.entity.SysJob">
+        SELECT * FROM sys_job
+        WHERE tenant_id = #{tenantId} AND delete_flag = 0
+        <if test="query.jobName != null and query.jobName != ''">
+            AND job_name LIKE CONCAT('%', #{query.jobName}, '%')
+        </if>
+        <if test="query.jobGroup != null and query.jobGroup != ''">
+            AND job_group = #{query.jobGroup}
+        </if>
+        <if test="query.status != null">
+            AND status = #{query.status}
+        </if>
+        ORDER BY created_time DESC
+        LIMIT #{query.offset}, #{query.size}
+    </select>
+
+    <select id="selectCount" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM sys_job
+        WHERE tenant_id = #{tenantId} AND delete_flag = 0
+        <if test="query.jobName != null and query.jobName != ''">
+            AND job_name LIKE CONCAT('%', #{query.jobName}, '%')
+        </if>
+        <if test="query.jobGroup != null and query.jobGroup != ''">
+            AND job_group = #{query.jobGroup}
+        </if>
+        <if test="query.status != null">
+            AND status = #{query.status}
+        </if>
+    </select>
+
+    <select id="selectEnabledJobs" resultType="com.tnong.boot.system.job.domain.entity.SysJob">
+        SELECT * FROM sys_job WHERE tenant_id = #{tenantId} AND status = 1 AND delete_flag = 0
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO sys_job (tenant_id, job_name, job_group, invoke_target, cron_expression, misfire_policy, concurrent, status, next_fire_time, last_fire_time, remark, delete_flag, created_time, created_user, updated_time, updated_user, version)
+        VALUES (#{tenantId}, #{jobName}, #{jobGroup}, #{invokeTarget}, #{cronExpression}, #{misfirePolicy}, #{concurrent}, #{status}, #{nextFireTime}, #{lastFireTime}, #{remark}, 0, NOW(), #{createdUser}, NOW(), #{updatedUser}, 0)
+    </insert>
+
+    <update id="updateByIdWithVersion">
+        UPDATE sys_job
+        <set>
+            <if test="jobName != null">job_name = #{jobName},</if>
+            <if test="jobGroup != null">job_group = #{jobGroup},</if>
+            <if test="invokeTarget != null">invoke_target = #{invokeTarget},</if>
+            <if test="cronExpression != null">cron_expression = #{cronExpression},</if>
+            <if test="misfirePolicy != null">misfire_policy = #{misfirePolicy},</if>
+            <if test="concurrent != null">concurrent = #{concurrent},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            updated_time = NOW(), updated_user = #{updatedUser}, version = version + 1
+        </set>
+        WHERE id = #{id} AND tenant_id = #{tenantId} AND version = #{version} AND delete_flag = 0
+    </update>
+
+    <update id="updateNextFireTime">
+        UPDATE sys_job SET next_fire_time = #{nextFireTime} WHERE id = #{id}
+    </update>
+
+    <update id="updateLastFireTime">
+        UPDATE sys_job SET last_fire_time = #{lastFireTime} WHERE id = #{id}
+    </update>
+
+    <update id="deleteById">
+        UPDATE sys_job SET delete_flag = 1, updated_time = NOW(), updated_user = #{updatedUser}, version = version + 1
+        WHERE id = #{id} AND tenant_id = #{tenantId} AND version = #{version} AND delete_flag = 0
+    </update>
+
+</mapper>

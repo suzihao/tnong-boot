@@ -66,37 +66,35 @@
 - [x] 文件存储策略（本地 + MinIO）
 - [x] 文件秒传（MD5去重）
 
+### 10. sys_job - 定时任务 ✅
+- [x] Entity / DTO / VO
+- [x] Mapper + XML
+- [x] Service + ServiceImpl
+- [x] Controller
+- [x] 任务调度管理器
+- [x] 任务执行器
+- [x] 支持启动/停止/立即执行
+
+### 11. sys_job_log - 任务日志 ✅
+- [x] Entity / DTO / VO
+- [x] Mapper + XML
+- [x] Service + ServiceImpl
+- [x] Controller（只读）
+- [x] 自动记录执行结果
+
 ## 待开发模块（按优先级）
 
-### 10. sys_user_role - 用户角色关联 🔧
+### 12. sys_user_dept - 用户部门关联 ✅
 - [x] Entity
 - [x] Mapper
-- [ ] Service + ServiceImpl
-- [ ] 批量分配/取消
+- [x] Service + ServiceImpl
+- [x] 批量分配/取消
 
-### 11. sys_user_dept - 用户部门关联 🔧
-- [x] Entity
-- [x] Mapper
-- [ ] Service + ServiceImpl
-- [ ] 批量分配/取消
-
-### 12. sys_login_log - 登录日志 🔧
-- [ ] Entity / DTO / VO
-- [ ] Mapper + XML
-- [ ] Service + ServiceImpl
-- [ ] Controller（只读）
-
-### 13. sys_job - 定时任务 🔧
-- [ ] Entity / DTO / VO
-- [ ] Mapper + XML
-- [ ] Service + ServiceImpl
-- [ ] Controller
-
-### 14. sys_job_log - 任务日志 🔧
-- [ ] Entity / DTO / VO
-- [ ] Mapper + XML
-- [ ] Service + ServiceImpl
-- [ ] Controller（只读）
+### 13. sys_login_log - 登录日志 ✅
+- [x] Entity / DTO / VO
+- [x] Mapper + XML
+- [x] Service + ServiceImpl
+- [x] Controller（只读）
 
 ## 数据库脚本状态
 
@@ -187,15 +185,28 @@
 - GET /api/system/file/download/{id} - 下载文件
 - DELETE /api/system/file/{id} - 删除文件
 
+### 定时任务
+- GET /api/system/job/page - 分页查询
+- GET /api/system/job/{id} - 详情
+- POST /api/system/job - 新增
+- PUT /api/system/job - 更新
+- DELETE /api/system/job/{id} - 删除
+- PUT /api/system/job/status/{id} - 修改状态（启动/停止）
+- POST /api/system/job/run/{id} - 立即执行一次
+
+### 任务日志
+- GET /api/system/job-log/page - 分页查询
+- GET /api/system/job-log/{id} - 详情
+
 ## 下一步计划
 
 1. ✅ 完成核心 RBAC 模块（部门、角色、菜单）
 2. ✅ 开发字典管理 Service + Controller
 3. ✅ 开发系统配置 Service + Controller
 4. ✅ 开发文件管理（支持本地存储和MinIO）
-5. 开发用户角色关联、用户部门关联
-6. 开发登录日志（含 AOP 切面）
-7. 开发定时任务
+5. ✅ 开发定时任务（含任务日志）
+6. 开发用户角色关联、用户部门关联
+7. 开发登录日志（含 AOP 切面）
 8. 实现多租户拦截器
 9. 实现公共字段自动填充
 10. 完善认证授权

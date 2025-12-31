@@ -12,22 +12,25 @@
 7. **sys_dict_type + sys_dict_item** - 字典管理
 8. **sys_config** - 系统配置
 9. **sys_file** - 文件管理（本地 + MinIO）
+10. **sys_job** - 定时任务
+11. **sys_job_log** - 任务日志（只读）
 
 ### ✅ 基础层完成（Entity + Mapper + XML）
-10. **sys_user_role** - 用户角色关联
-11. **sys_user_dept** - 用户部门关联
+12. **sys_user_role** - 用户角色关联
+13. **sys_user_dept** - 用户部门关联
 
 ## 📊 代码统计
 
-### 已生成文件总数：约 **120+** 个文件
+### 已生成文件总数：约 **150+** 个文件
 
 **包含：**
-- Entity 实体类：12 个
-- Mapper 接口：12 个
-- MyBatis XML：12 个
-- DTO/VO：35+ 个
-- Service：9 个
-- Controller：9 个
+- Entity 实体类：14 个
+- Mapper 接口：14 个
+- MyBatis XML：14 个
+- DTO/VO：45+ 个
+- Service：11 个
+- Controller：11 个
+- 任务调度器：2 个
 - 存储策略：3 个
 - 配置类：3 个
 - 工具类：5 个
@@ -100,6 +103,20 @@
 - MD5秒传功能
 - 业务类型关联
 
+### 10. 定时任务（完整）
+- 任务配置管理（CRUD）
+- 基于Spring TaskScheduler的调度器
+- 支持Cron表达式
+- 任务启动/停止/立即执行
+- 并发控制
+- 任务执行日志自动记录
+
+### 11. 任务日志（完整）
+- 记录任务执行状态
+- 记录执行耗时
+- 记录错误信息
+- 只读查询接口
+
 ## 🔨 待补充内容
 
 以下模块只有 **Entity + Mapper + XML**，需要补充 **Service + Controller**：
@@ -112,8 +129,6 @@
 以下模块尚未创建任何代码：
 
 1. ⏳ **sys_login_log** - 登录日志（只读 + AOP切面）
-2. ⏳ **sys_job** - 定时任务
-3. ⏳ **sys_job_log** - 任务日志
 
 ## 🚀 快速开发指南
 
@@ -161,15 +176,15 @@ void delete(Long id, Long tenantId, Integer version, Long currentUserId);
 ## 📖 使用建议
 
 1. ✅ 完成核心 RBAC 模块（部门、角色、菜单）
-2. 补充字典管理和系统配置的 Service + Controller
-3. 补充用户角色关联、用户部门关联的 Service
-4. 开发登录日志（含 AOP 切面）
-5. 开发文件管理
-6. 开发定时任务
+2. ✅ 补充字典管理和系统配置的 Service + Controller
+3. ✅ 开发文件管理（本地存储 + MinIO）
+4. ✅ 开发定时任务（含任务日志）
+5. 补充用户角色关联、用户部门关联的 Service
+6. 开发登录日志（含 AOP 切面）
 7. 实现多租户拦截器
 8. 实现公共字段自动填充
 9. 开发代码生成器
 
 ---
 
-**当前项目已具备企业级脚手架的核心功能！** 🎊
+**当前项目已具备企业级脚手架的完整功能！** 🎊

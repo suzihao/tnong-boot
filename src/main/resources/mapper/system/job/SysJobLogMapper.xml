@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tnong.boot.system.job.mapper.SysJobLogMapper">
+
+    <select id="selectById" resultType="com.tnong.boot.system.job.domain.entity.SysJobLog">
+        SELECT * FROM sys_job_log WHERE id = #{id} AND tenant_id = #{tenantId}
+    </select>
+
+    <select id="selectPageList" resultType="com.tnong.boot.system.job.domain.entity.SysJobLog">
+        SELECT * FROM sys_job_log
+        WHERE tenant_id = #{tenantId}
+        <if test="query.jobId != null">
+            AND job_id = #{query.jobId}
+        </if>
+        <if test="query.jobName != null and query.jobName != ''">
+            AND job_name LIKE CONCAT('%', #{query.jobName}, '%')
+        </if>
+        <if test="query.status != null">
+            AND status = #{query.status}
+        </if>
+        <if test="query.startTime != null">
+            AND start_time &gt;= #{query.startTime}
+        </if>
+        <if test="query.endTime != null">
+            AND start_time &lt;= #{query.endTime}
+        </if>
+        ORDER BY start_time DESC
+        LIMIT #{query.offset}, #{query.size}
+    </select>
+
+    <select id="selectCount" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM sys_job_log
+        WHERE tenant_id = #{tenantId}
+        <if test="query.jobId != null">
+            AND job_id = #{query.jobId}
+        </if>
+        <if test="query.jobName != null and query.jobName != ''">
+            AND job_name LIKE CONCAT('%', #{query.jobName}, '%')
+        </if>
+        <if test="query.status != null">
+            AND status = #{query.status}
+        </if>
+        <if test="query.startTime != null">
+            AND start_time &gt;= #{query.startTime}
+        </if>
+        <if test="query.endTime != null">
+            AND start_time &lt;= #{query.endTime}
+        </if>
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO sys_job_log (tenant_id, job_id, job_name, job_group, invoke_target, status, error_msg, start_time, end_time, cost_time)
+        VALUES (#{tenantId}, #{jobId}, #{jobName}, #{jobGroup}, #{invokeTarget}, #{status}, #{errorMsg}, #{startTime}, #{endTime}, #{costTime})
+    </insert>
+
+</mapper>
