@@ -7,6 +7,10 @@ spring:
     name: tnong-boot
   profiles:
     active: dev
+  task:
+    scheduling:
+      pool:
+        size: 10
   
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -35,3 +39,5 @@ wecom:
   secret: ${WECOM_SECRET:}
     #  OAuth2 回调地址
   redirect-uri: ${WECOM_REDIRECT_URI:http://localhost:8080/api/auth/wecom/callback}
+
+
