@@ -10,7 +10,7 @@
 - **Spring Boot**: 4.0.0
 - **MyBatis**: 4.0.0
 - **MySQL**: 8.x
-- **其他**: Lombok、Spring Security
+- **其他**: Lombok
 
 ## 项目结构
 

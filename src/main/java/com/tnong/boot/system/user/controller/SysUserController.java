@@ -1,6 +1,7 @@
 package com.tnong.boot.system.user.controller;
 
 import com.tnong.boot.common.annotation.Log;
+import com.tnong.boot.common.annotation.RequirePermission;
 import com.tnong.boot.common.constant.BusinessType;
 import com.tnong.boot.common.web.PageResult;
 import com.tnong.boot.common.web.Result;
@@ -25,6 +26,7 @@ public class SysUserController {
     /**
      * 分页查询用户列表
      */
+    @RequirePermission("system:user:list")
     @GetMapping("/page")
     public Result<PageResult<SysUserVO>> page(SysUserQueryDTO query) {
         Long tenantId = UserContext.getTenantId();
@@ -35,6 +37,7 @@ public class SysUserController {
     /**
      * 根据ID查询用户详情
      */
+    @RequirePermission("system:user:query")
     @GetMapping("/{id}")
     public Result<SysUserVO> getById(@PathVariable Long id) {
         Long tenantId = UserContext.getTenantId();
@@ -45,6 +48,7 @@ public class SysUserController {
     /**
      * 新增用户
      */
+    @RequirePermission("system:user:add")
     @Log(module = "用户管理", businessType = BusinessType.INSERT)
     @PostMapping
     public Result<Long> save(@RequestBody SysUserSaveDTO dto) {
@@ -57,6 +61,7 @@ public class SysUserController {
     /**
      * 更新用户
      */
+    @RequirePermission("system:user:edit")
     @Log(module = "用户管理", businessType = BusinessType.UPDATE)
     @PutMapping
     public Result<Void> update(@RequestBody SysUserSaveDTO dto) {
@@ -69,6 +74,7 @@ public class SysUserController {
     /**
      * 删除用户
      */
+    @RequirePermission("system:user:delete")
     @DeleteMapping("/{id}")
     public Result<Void> delete(@PathVariable Long id, @RequestParam Integer version) {
         Long tenantId = UserContext.getTenantId();
@@ -80,6 +86,7 @@ public class SysUserController {
     /**
      * 查询用户已分配的角色ID列表
      */
+    @RequirePermission("system:user:query")
     @GetMapping("/{userId}/role-ids")
     public Result<java.util.List<Long>> getRoleIds(@PathVariable Long userId) {
         Long tenantId = UserContext.getTenantId();
@@ -90,6 +97,7 @@ public class SysUserController {
     /**
      * 为用户分配角色
      */
+    @RequirePermission(value = {"system:user:edit", "system:role:assign"}, logical = RequirePermission.Logical.AND)
     @PostMapping("/{userId}/role-ids")
     public Result<Void> assignRoles(@PathVariable Long userId, @RequestBody java.util.List<Long> roleIds) {
         Long tenantId = UserContext.getTenantId();

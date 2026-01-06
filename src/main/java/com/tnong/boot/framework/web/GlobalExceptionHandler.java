@@ -1,6 +1,7 @@
 package com.tnong.boot.framework.web;
 
 import com.tnong.boot.common.exception.BusinessException;
+import com.tnong.boot.common.exception.PermissionDeniedException;
 import com.tnong.boot.common.web.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -19,6 +20,15 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BusinessException.class)
     public Result<?> handleBusinessException(BusinessException e) {
         log.error("业务异常: {}", e.getMessage());
+        return Result.fail(e.getCode(), e.getMessage());
+    }
+
+    /**
+     * 权限不足异常
+     */
+    @ExceptionHandler(PermissionDeniedException.class)
+    public Result<?> handlePermissionDeniedException(PermissionDeniedException e) {
+        log.warn("权限不足: {}", e.getMessage());
         return Result.fail(e.getCode(), e.getMessage());
     }
 
