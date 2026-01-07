@@ -168,7 +168,7 @@ public class SysMenuServiceImpl implements SysMenuService {
 
         // 5. 收集按钮权限标识
         List<String> perms = menus.stream()
-                .filter(m -> Objects.equals(m.getType(), 3))
+//                .filter(m -> Objects.equals(m.getType(), 3))
                 .map(SysMenu::getPerms)
                 .filter(p -> p != null && !p.isEmpty())
                 .distinct()
