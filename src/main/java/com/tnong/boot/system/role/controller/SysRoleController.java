@@ -45,7 +45,7 @@ public class SysRoleController {
     /**
      * 更新角色
      */
-    @PutMapping
+    @PostMapping("/update")
     public Result<Void> update(@RequestBody SysRoleSaveDTO dto) {
         Long tenantId = UserContext.getTenantId();
         Long currentUserId = UserContext.getUserId();
@@ -56,11 +56,11 @@ public class SysRoleController {
     /**
      * 删除角色
      */
-    @DeleteMapping("/{id}")
-    public Result<Void> delete(@PathVariable Long id, @RequestParam Integer version) {
+    @PostMapping("/delete")
+    public Result<Void> delete(@RequestBody SysRoleSaveDTO dto) {
         Long tenantId = UserContext.getTenantId();
         Long currentUserId = UserContext.getUserId();
-        sysRoleService.delete(id, tenantId, version, currentUserId);
+        sysRoleService.delete(dto.getId(), tenantId, dto.getVersion(), currentUserId);
         return Result.success("删除成功", null);
     }
 

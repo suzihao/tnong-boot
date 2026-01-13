@@ -51,7 +51,7 @@ public class SysTenantController {
     /**
      * 更新租户
      */
-    @PutMapping
+    @PostMapping("/update")
     public Result<Void> update(@RequestBody SysTenantSaveDTO dto) {
         Long currentUserId = UserContext.getUserId();
         sysTenantService.update(dto, currentUserId);
@@ -61,10 +61,10 @@ public class SysTenantController {
     /**
      * 删除租户
      */
-    @DeleteMapping("/{id}")
-    public Result<Void> delete(@PathVariable Long id, @RequestParam Integer version) {
+    @PostMapping("/delete")
+    public Result<Void> delete(@RequestBody SysTenantSaveDTO dto) {
         Long currentUserId = UserContext.getUserId();
-        sysTenantService.delete(id, version, currentUserId);
+        sysTenantService.delete(dto.getId(), dto.getVersion(), currentUserId);
         return Result.success("删除成功", null);
     }
 }

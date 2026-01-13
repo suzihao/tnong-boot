@@ -77,12 +77,12 @@ public class KbDocumentController {
     /**
      * 更新文档
      */
-    @PutMapping("/{id}")
-    public Result<String> update(@PathVariable Long id, @RequestBody KbDocumentDTO dto) {
+    @PostMapping("/update")
+    public Result<String> update(@RequestBody KbDocumentDTO dto) {
         Long currentUserBizId = UserContext.getUserId();
-    
+
         KbDocument document = new KbDocument();
-        document.setId(id);
+        document.setId(dto.getId());
         document.setCategoryId(dto.getCategoryId());
         document.setTitle(dto.getTitle());
         document.setContent(dto.getContent());
@@ -91,7 +91,7 @@ public class KbDocumentController {
         document.setStatus(dto.getStatus());
         document.setUpdatedUser(currentUserBizId);
         document.setVersion(dto.getVersion());
-    
+
         int rows = kbDocumentMapper.updateById(document);
         if (rows == 0) {
             return Result.fail("更新失败，数据可能已被修改");
@@ -102,10 +102,10 @@ public class KbDocumentController {
     /**
      * 删除文档
      */
-    @DeleteMapping("/{id}")
-    public Result<String> delete(@PathVariable Long id) {
+    @PostMapping("/delete")
+    public Result<String> delete(@RequestBody KbDocumentDTO dto) {
         Long currentUserBizId = UserContext.getUserId();
-        kbDocumentMapper.deleteById(id, currentUserBizId);
+        kbDocumentMapper.deleteById(dto.getId(), currentUserBizId);
         return Result.success("删除成功");
     }
 }

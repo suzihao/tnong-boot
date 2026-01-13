@@ -2,9 +2,9 @@ package com.tnong.boot.system.log.controller;
 
 import java.util.List;
 
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -51,7 +51,7 @@ public class SysOperLogController {
     /**
      * 批量删除操作日志
      */
-    @DeleteMapping("/batch")
+    @PostMapping("/batch-delete")
     public Result<Void> deleteByIds(@RequestBody List<Long> ids) {
         Long tenantId = UserContext.getTenantId();
         sysOperLogService.deleteByIds(ids, tenantId);
@@ -61,7 +61,7 @@ public class SysOperLogController {
     /**
      * 清空操作日志
      */
-    @DeleteMapping("/truncate")
+    @PostMapping("/truncate")
     public Result<Void> truncate() {
         Long tenantId = UserContext.getTenantId();
         sysOperLogService.truncate(tenantId);

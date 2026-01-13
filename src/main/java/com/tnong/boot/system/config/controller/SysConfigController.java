@@ -46,7 +46,7 @@ public class SysConfigController {
         return Result.success("新增成功", id);
     }
 
-    @PutMapping
+    @PostMapping("/update")
     public Result<Void> update(@RequestBody SysConfigSaveDTO dto) {
         Long tenantId = UserContext.getTenantId();
         Long currentUserId = UserContext.getUserId();
@@ -54,11 +54,11 @@ public class SysConfigController {
         return Result.success("更新成功", null);
     }
 
-    @DeleteMapping("/{id}")
-    public Result<Void> delete(@PathVariable Long id, @RequestParam Integer version) {
+    @PostMapping("/delete")
+    public Result<Void> delete(@RequestBody SysConfigSaveDTO dto) {
         Long tenantId = UserContext.getTenantId();
         Long currentUserId = UserContext.getUserId();
-        sysConfigService.delete(id, tenantId, version, currentUserId);
+        sysConfigService.delete(dto.getId(), tenantId, dto.getVersion(), currentUserId);
         return Result.success("删除成功", null);
     }
 }

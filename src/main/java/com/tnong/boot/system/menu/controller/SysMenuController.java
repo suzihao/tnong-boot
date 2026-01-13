@@ -46,7 +46,7 @@ public class SysMenuController {
     /**
      * 更新菜单
      */
-    @PutMapping
+    @PostMapping("/update")
     public Result<Void> update(@RequestBody SysMenuSaveDTO dto) {
         Long tenantId = UserContext.getTenantId();
         Long currentUserId = UserContext.getUserId();
@@ -57,11 +57,11 @@ public class SysMenuController {
     /**
      * 删除菜单
      */
-    @DeleteMapping("/{id}")
-    public Result<Void> delete(@PathVariable Long id, @RequestParam Integer version) {
+    @PostMapping("/delete")
+    public Result<Void> delete(@RequestBody SysMenuSaveDTO dto) {
         Long tenantId = UserContext.getTenantId();
         Long currentUserId = UserContext.getUserId();
-        sysMenuService.delete(id, tenantId, version, currentUserId);
+        sysMenuService.delete(dto.getId(), tenantId, dto.getVersion(), currentUserId);
         return Result.success("删除成功", null);
     }
 

@@ -91,7 +91,7 @@ public class SysDeptController {
      * 更新部门
      */
     @Log(module = "部门管理", businessType = BusinessType.UPDATE)
-    @PutMapping
+    @PostMapping("/update")
     public Result<Void> update(@RequestBody SysDeptSaveDTO dto) {
         Long tenantId = UserContext.getTenantId();
         Long currentUserId = UserContext.getUserId();
@@ -103,11 +103,11 @@ public class SysDeptController {
      * 删除部门
      */
     @Log(module = "部门管理", businessType = BusinessType.DELETE)
-    @DeleteMapping("/{id}")
-    public Result<Void> delete(@PathVariable Long id, @RequestParam Integer version) {
+    @PostMapping("/delete")
+    public Result<Void> delete(@RequestBody SysDeptSaveDTO dto) {
         Long tenantId = UserContext.getTenantId();
         Long currentUserId = UserContext.getUserId();
-        sysDeptService.delete(id, tenantId, version, currentUserId);
+        sysDeptService.delete(dto.getId(), tenantId, dto.getVersion(), currentUserId);
         return Result.success("删除成功", null);
     }
 }

@@ -39,7 +39,7 @@ public class SysJobController {
         return Result.success("新增成功", id);
     }
 
-    @PutMapping
+    @PostMapping("/update")
     public Result<Void> update(@RequestBody SysJobSaveDTO dto) {
         Long tenantId = UserContext.getTenantId();
         Long currentUserId = UserContext.getUserId();
@@ -47,19 +47,19 @@ public class SysJobController {
         return Result.success("更新成功", null);
     }
 
-    @DeleteMapping("/{id}")
-    public Result<Void> delete(@PathVariable Long id, @RequestParam Integer version) {
+    @PostMapping("/delete")
+    public Result<Void> delete(@RequestBody SysJobSaveDTO dto) {
         Long tenantId = UserContext.getTenantId();
         Long currentUserId = UserContext.getUserId();
-        sysJobService.delete(id, tenantId, version, currentUserId);
+        sysJobService.delete(dto.getId(), tenantId, dto.getVersion(), currentUserId);
         return Result.success("删除成功", null);
     }
 
-    @PutMapping("/status/{id}")
-    public Result<Void> changeStatus(@PathVariable Long id, @RequestParam Integer status) {
+    @PostMapping("/status")
+    public Result<Void> changeStatus(@RequestBody SysJobSaveDTO dto) {
         Long tenantId = UserContext.getTenantId();
         Long currentUserId = UserContext.getUserId();
-        sysJobService.changeStatus(id, status, tenantId, currentUserId);
+        sysJobService.changeStatus(dto.getId(), dto.getStatus(), tenantId, currentUserId);
         return Result.success("状态修改成功", null);
     }
 

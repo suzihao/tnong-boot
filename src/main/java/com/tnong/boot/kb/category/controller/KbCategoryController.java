@@ -63,12 +63,12 @@ public class KbCategoryController {
     /**
      * 更新目录
      */
-    @PutMapping("/{id}")
-    public Result<String> update(@PathVariable Long id, @RequestBody KbCategoryDTO dto) {
+    @PostMapping("/update")
+    public Result<String> update(@RequestBody KbCategoryDTO dto) {
         Long currentUserBizId = UserContext.getUserId();
-    
+
         KbCategory category = new KbCategory();
-        category.setId(id);
+        category.setId(dto.getId());
         category.setParentId(dto.getParentId());
         category.setName(dto.getName());
         category.setIcon(dto.getIcon());
@@ -77,7 +77,7 @@ public class KbCategoryController {
         category.setStatus(dto.getStatus());
         category.setUpdatedUser(currentUserBizId);
         category.setVersion(dto.getVersion());
-    
+
         int rows = kbCategoryMapper.updateById(category);
         if (rows == 0) {
             return Result.fail("更新失败，数据可能已被修改");
@@ -100,10 +100,10 @@ public class KbCategoryController {
     /**
      * 删除目录
      */
-    @DeleteMapping("/{id}")
-    public Result<String> delete(@PathVariable Long id) {
+    @PostMapping("/delete")
+    public Result<String> delete(@RequestBody KbCategoryDTO dto) {
         Long currentUserBizId = UserContext.getUserId();
-        int rows = kbCategoryMapper.deleteById(id, currentUserBizId);
+        int rows = kbCategoryMapper.deleteById(dto.getId(), currentUserBizId);
         if (rows == 0) {
             return Result.fail("删除失败，目录不存在或已被删除");
         }

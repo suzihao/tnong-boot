@@ -39,7 +39,7 @@ public class SysDictTypeController {
         return Result.success("新增成功", id);
     }
 
-    @PutMapping
+    @PostMapping("/update")
     public Result<Void> update(@RequestBody SysDictTypeSaveDTO dto) {
         Long tenantId = UserContext.getTenantId();
         Long currentUserId = UserContext.getUserId();
@@ -47,11 +47,11 @@ public class SysDictTypeController {
         return Result.success("更新成功", null);
     }
 
-    @DeleteMapping("/{id}")
-    public Result<Void> delete(@PathVariable Long id, @RequestParam Integer version) {
+    @PostMapping("/delete")
+    public Result<Void> delete(@RequestBody SysDictTypeSaveDTO dto) {
         Long tenantId = UserContext.getTenantId();
         Long currentUserId = UserContext.getUserId();
-        sysDictTypeService.delete(id, tenantId, version, currentUserId);
+        sysDictTypeService.delete(dto.getId(), tenantId, dto.getVersion(), currentUserId);
         return Result.success("删除成功", null);
     }
 }

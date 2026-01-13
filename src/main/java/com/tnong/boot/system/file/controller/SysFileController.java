@@ -4,6 +4,7 @@ import com.tnong.boot.common.web.PageResult;
 import com.tnong.boot.common.web.Result;
 import com.tnong.boot.framework.security.UserContext;
 import com.tnong.boot.system.file.domain.dto.FileUploadDTO;
+import com.tnong.boot.system.file.domain.dto.SysFileDeleteDTO;
 import com.tnong.boot.system.file.domain.dto.SysFileQueryDTO;
 import com.tnong.boot.system.file.domain.vo.SysFileVO;
 import com.tnong.boot.system.file.service.SysFileService;
@@ -71,11 +72,11 @@ public class SysFileController {
                 .body(data);
     }
 
-    @DeleteMapping("/{id}")
-    public Result<Void> delete(@PathVariable Long id, @RequestParam Integer version) {
+    @PostMapping("/delete")
+    public Result<Void> delete(@RequestBody SysFileDeleteDTO dto) {
         Long tenantId = UserContext.getTenantId();
         Long currentUserId = UserContext.getUserId();
-        sysFileService.delete(id, tenantId, version, currentUserId);
+        sysFileService.delete(dto.getId(), tenantId, dto.getVersion(), currentUserId);
         return Result.success("删除成功", null);
     }
 }
