@@ -1,10 +1,10 @@
-package com.tnong.boot.kb.category.controller;
+package com.tnong.boot.biz.kb.category.controller;
 
 import com.tnong.boot.common.web.Result;
 import com.tnong.boot.framework.security.UserContext;
-import com.tnong.boot.kb.category.domain.dto.KbCategoryDTO;
-import com.tnong.boot.kb.category.domain.entity.KbCategory;
-import com.tnong.boot.kb.category.mapper.KbCategoryMapper;
+import com.tnong.boot.biz.kb.category.domain.dto.KbCategoryDTO;
+import com.tnong.boot.biz.kb.category.domain.entity.KbCategory;
+import com.tnong.boot.biz.kb.category.mapper.KbCategoryMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 

@@ -1,10 +1,10 @@
-package com.tnong.boot.kb.document.controller;
+package com.tnong.boot.biz.kb.document.controller;
 
 import com.tnong.boot.common.web.Result;
 import com.tnong.boot.framework.security.UserContext;
-import com.tnong.boot.kb.document.domain.dto.KbDocumentDTO;
-import com.tnong.boot.kb.document.domain.entity.KbDocument;
-import com.tnong.boot.kb.document.mapper.KbDocumentMapper;
+import com.tnong.boot.biz.kb.document.domain.dto.KbDocumentDTO;
+import com.tnong.boot.biz.kb.document.domain.entity.KbDocument;
+import com.tnong.boot.biz.kb.document.mapper.KbDocumentMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 

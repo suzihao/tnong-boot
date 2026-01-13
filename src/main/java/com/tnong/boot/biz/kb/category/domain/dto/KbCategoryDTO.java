@@ -1,4 +1,4 @@
-package com.tnong.boot.kb.category.domain.dto;
+package com.tnong.boot.biz.kb.category.domain.dto;
 
 import lombok.Data;
 

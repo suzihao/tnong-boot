@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.tnong.boot.kb.category.mapper.KbCategoryMapper">
+<mapper namespace="com.tnong.boot.biz.kb.category.mapper.KbCategoryMapper">
 
-    <resultMap id="BaseResultMap" type="com.tnong.boot.kb.category.domain.entity.KbCategory">
+    <resultMap id="BaseResultMap" type="com.tnong.boot.biz.kb.category.domain.entity.KbCategory">
         <id column="id" property="id"/>
         <result column="tenant_id" property="tenantId"/>
         <result column="parent_id" property="parentId"/>

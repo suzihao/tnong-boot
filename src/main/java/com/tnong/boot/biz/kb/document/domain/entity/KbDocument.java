@@ -1,37 +1,40 @@
-package com.tnong.boot.kb.category.domain.entity;
+package com.tnong.boot.biz.kb.document.domain.entity;
 
 import lombok.Data;
 
 import java.time.LocalDateTime;
 
 /**
- * 知识库目录实体
+ * 知识文档实体
  */
 @Data
-public class KbCategory {
+public class KbDocument {
     
-    /** 目录ID */
+    /** 文档ID */
     private Long id;
     
     /** 租户ID */
     private Long tenantId;
     
-    /** 父目录ID，0表示根目录 */
-    private Long parentId;
+    /** 目录ID */
+    private Long categoryId;
     
-    /** 目录名称 */
-    private String name;
+    /** 文档标题 */
+    private String title;
     
-    /** 图标 */
-    private String icon;
+    /** Markdown内容 */
+    private String content;
+    
+    /** 标签，逗号分隔 */
+    private String tags;
     
     /** 排序 */
     private Integer sort;
     
-    /** 描述 */
-    private String description;
+    /** 浏览次数 */
+    private Integer viewCount;
     
-    /** 状态：1启用，0禁用 */
+    /** 状态：1已发布，0草稿 */
     private Integer status;
     
     /** 删除标记：0未删除，1已删除 */

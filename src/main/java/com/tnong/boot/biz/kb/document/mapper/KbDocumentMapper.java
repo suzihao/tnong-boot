@@ -1,6 +1,6 @@
-package com.tnong.boot.kb.document.mapper;
+package com.tnong.boot.biz.kb.document.mapper;
 
-import com.tnong.boot.kb.document.domain.entity.KbDocument;
+import com.tnong.boot.biz.kb.document.domain.entity.KbDocument;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;

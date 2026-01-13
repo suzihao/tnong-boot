@@ -1,6 +1,6 @@
-package com.tnong.boot.kb.category.mapper;
+package com.tnong.boot.biz.kb.category.mapper;
 
-import com.tnong.boot.kb.category.domain.entity.KbCategory;
+import com.tnong.boot.biz.kb.category.domain.entity.KbCategory;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
