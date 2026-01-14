@@ -42,7 +42,7 @@ public class SysTenantServiceImpl implements SysTenantService {
                 })
                 .toList();
         
-        return PageResult.of(total, records, query.getCurrent(), query.getSize());
+        return PageResult.of(total, records, query.getPage(), query.getSize());
     }
 
     @Override

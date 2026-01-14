@@ -11,10 +11,10 @@ public class SysFileQueryDTO implements Serializable {
     private Integer storageType;
     private String bizType;
     private Long bizId;
-    private Long current = 1L;
+    private Long page = 1L;
     private Long size = 10L;
 
     public Long getOffset() {
-        return (current - 1) * size;
+        return (page - 1) * size;
     }
 }

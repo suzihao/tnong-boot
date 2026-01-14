@@ -49,7 +49,7 @@ public class SysOperLogServiceImpl implements SysOperLogService {
                 })
                 .toList();
 
-        return PageResult.of(total, records, query.getCurrent(), query.getSize());
+        return PageResult.of(total, records, query.getPage(), query.getSize());
     }
 
     @Override

@@ -30,7 +30,7 @@ public class SysTenantQueryDTO implements Serializable {
     /**
      * 当前页码
      */
-    private Long current = 1L;
+    private Long page = 1L;
 
     /**
      * 每页大小
@@ -38,6 +38,6 @@ public class SysTenantQueryDTO implements Serializable {
     private Long size = 10L;
 
     public Long getOffset() {
-        return (current - 1) * size;
+        return (page - 1) * size;
     }
 }

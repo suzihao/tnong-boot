@@ -13,10 +13,10 @@ public class SysJobLogQueryDTO implements Serializable {
     private Integer status;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
-    private Long current = 1L;
+    private Long page = 1L;
     private Long size = 10L;
 
     public Long getOffset() {
-        return (current - 1) * size;
+        return (page - 1) * size;
     }
 }

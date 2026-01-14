@@ -34,7 +34,7 @@ public class SysUserServiceImpl implements SysUserService {
     public PageResult<SysUserVO> pageList(SysUserQueryDTO query, Long tenantId) {
         List<SysUserVO> records = sysUserMapper.selectPageList(query, tenantId);
         Long total = sysUserMapper.selectCount(query, tenantId);
-        return PageResult.of(total, records, query.getCurrent(), query.getSize());
+        return PageResult.of(total, records, query.getPage(), query.getSize());
     }
 
     @Override

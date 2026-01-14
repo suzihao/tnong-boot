@@ -50,7 +50,7 @@ public class SysFileServiceImpl implements SysFileService {
                 })
                 .toList();
 
-        return PageResult.of(total, records, query.getCurrent(), query.getSize());
+        return PageResult.of(total, records, query.getPage(), query.getSize());
     }
 
     @Override

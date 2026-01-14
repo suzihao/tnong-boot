@@ -32,7 +32,7 @@ public class SysJobLogServiceImpl implements SysJobLogService {
                 })
                 .toList();
 
-        return PageResult.of(total, records, query.getCurrent(), query.getSize());
+        return PageResult.of(total, records, query.getPage(), query.getSize());
     }
 
     @Override

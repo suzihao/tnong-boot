@@ -46,7 +46,7 @@ public class SysOperLogQueryDTO implements Serializable {
     /**
      * 当前页码
      */
-    private Long current = 1L;
+    private Long page = 1L;
 
     /**
      * 每页大小
@@ -57,6 +57,6 @@ public class SysOperLogQueryDTO implements Serializable {
      * 计算 LIMIT 偏移量
      */
     public Long getOffset() {
-        return (current - 1) * size;
+        return (page - 1) * size;
     }
 }
