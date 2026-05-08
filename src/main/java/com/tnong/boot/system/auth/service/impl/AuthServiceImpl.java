@@ -11,6 +11,7 @@ import com.tnong.boot.system.auth.domain.dto.LoginDTO;
 import com.tnong.boot.system.auth.domain.dto.WecomUserInfo;
 import com.tnong.boot.system.auth.domain.vo.LoginVO;
 import com.tnong.boot.system.auth.service.AuthService;
+import com.tnong.boot.system.auth.service.WecomService;
 import com.tnong.boot.system.log.domain.entity.SysLoginLog;
 import com.tnong.boot.system.log.mapper.SysLoginLogMapper;
 import com.tnong.boot.system.tenant.domain.entity.SysTenant;
@@ -45,6 +46,7 @@ public class AuthServiceImpl implements AuthService {
     private final SysTenantMapper sysTenantMapper;
     private final SysLoginLogMapper sysLoginLogMapper;
     private final SysUserThirdAccountMapper sysUserThirdAccountMapper;
+    private final WecomService wecomService;
 
     private final HttpClient client;
 
@@ -189,32 +191,13 @@ public class AuthServiceImpl implements AuthService {
      * 通过企业微信 code 换取用户信息
      */
     private WecomUserInfo getWecomUserInfoByCode(String code) {
-        // 1. 检查配置是否完整
-        if (!StringUtils.hasText(wecomCorpId) || !StringUtils.hasText(wecomSecret)) {
-            throw new BusinessException("企业微信配置未完成，请先在配置文件中设置 wecom.corp-id / wecom.secret");
-        }
-
-        // 2. 获取 access_token
-        String tokenUrl = "https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid="
-                + wecomCorpId + "&corpsecret=" + wecomSecret;
-
         try {
-           HttpRequest tokenRequest = HttpRequestUtil.getHttpRequest(tokenUrl);
-
-            HttpResponse<String> tokenResponse = client.send(tokenRequest, HttpResponse.BodyHandlers.ofString());
-            String tokenBody = tokenResponse.body();
+            // 1. 从缓存获取 access_token（如果缓存未命中，会自动调用企业微信API）
+            String accessToken = wecomService.getAccessToken();
 
             ObjectMapper mapper = new ObjectMapper();
-            JsonNode tokenNode = mapper.readTree(tokenBody);
-            int errcode = tokenNode.path("errcode").asInt(0);
-            if (errcode != 0) {
-                String errmsg = tokenNode.path("errmsg").stringValue(null);
-                throw new BusinessException("获取企业微信access_token失败:" + errmsg);
-            }
 
-            String accessToken = tokenNode.path("access_token").asText(null);
-
-            // 3. 通过code换取userId
+            // 2. 通过code换取userId
             String userInfoUrl = "https://qyapi.weixin.qq.com/cgi-bin/auth/getuserinfo?access_token="
                     + accessToken + "&code=" + code;
 
@@ -233,7 +216,7 @@ public class AuthServiceImpl implements AuthService {
                 throw new BusinessException("企业微信返回的userid为空");
             }
 
-            // 4. 通过userId获取详细信息
+            // 3. 通过userId获取详细信息
             String detailUrl = "https://qyapi.weixin.qq.com/cgi-bin/user/get?access_token="
                     + accessToken + "&userid=" + userId;
 
@@ -253,7 +236,7 @@ public class AuthServiceImpl implements AuthService {
             info.setEmail(detailNode.path("email").stringValue(null));
             info.setUnionId(detailNode.path("unionid").stringValue(null));
             info.setPosition(detailNode.path("position").stringValue(null));
-            
+
             // 从 extattr.attrs 中提取工号和手机号
             JsonNode extattr = detailNode.path("extattr");
             if (!extattr.isMissingNode() && extattr.has("attrs")) {
@@ -262,7 +245,7 @@ public class AuthServiceImpl implements AuthService {
                     for (JsonNode attr : attrs) {
                         String attrName = attr.path("name").stringValue("");
                         String attrValue = attr.path("value").stringValue(null);
-                        
+
                         if ("工号".equals(attrName) && attrValue != null) {
                             info.setEmployeeId(attrValue);
                         } else if ("同步手机".equals(attrName) && attrValue != null) {
@@ -271,7 +254,7 @@ public class AuthServiceImpl implements AuthService {
                     }
                 }
             }
-            
+
             return info;
         } catch (BusinessException e) {
             throw e;
