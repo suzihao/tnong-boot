@@ -34,8 +34,8 @@ jwt:
   # JWT密钥，生产环境必须通过环境变量配置，开发环境使用默认值
   secret: ${JWT_SECRET:tnong-boot-default-secret-key-for-development-only-please-change-in-production-environment}
   # Token有效期（毫秒），默认7天
-#  expiration: ${JWT_EXPIRATION:604800000}
-  expiration: ${JWT_EXPIRATION:60000}
+  expiration: ${JWT_EXPIRATION:604800000}
+#  expiration: ${JWT_EXPIRATION:60000}
 
 wecom:
   #  公司id
